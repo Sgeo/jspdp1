@@ -2,6 +2,7 @@ var ac=0, io=0, pc=4, y, ib, ov=0;
 var flag = [false, false, false, false, false, false, false];
 var sense = [false, false, false, false, false, false, false];
 var control=0;
+var elapsedTime = 0;
 
 var timer, canvas, ctx;
 
@@ -52,10 +53,10 @@ function handleKeyup(e){
 
 function frame(){
 	ctx.clearRect(0,0,550,550);
-	while(pc!=02051) step();
-	step();
-	while(pc!=02051) step();
-	step();
+	startingTime = elapsedTime;
+	while(elapsedTime - startingTime < 56000) {
+		step();
+	}
 }
 
 function step(){
@@ -63,6 +64,7 @@ function step(){
 }
 
 function dispatch(md) {
+	elapsedTime += 5;
 	y=md&07777; ib=(md>>12)&1;
 	switch(md>>13) {
 	case AND: ea(); ac&=memory[y]; break;
@@ -225,8 +227,10 @@ function dispatch(md) {
 }
 
 function ea() {
+	elapsedTime += 5;
 	while(true){
 		if (ib==0) return;
+		elapsedTime += 5;
 		ib=(memory[y]>>12)&1;
 		y=memory[y]&07777;
 	}

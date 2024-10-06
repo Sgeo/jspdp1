@@ -6,6 +6,7 @@
 <style type="text/css">@import "spacewar.css";</style>
 <script type="text/javascript" src="spacewar.js"></script>
 <script type="text/javascript" src="spacewar.bin.js"></script>
+<script type="text/javascript" src="rimloader.js"></script>
 <script type="text/javascript">
   if (!document.createElement('canvas').getContext) {
     window.location = "nocanvas.html";
@@ -22,5 +23,18 @@
 <canvas class="spacewar" id="swcanvas"></canvas>
 </div>
 </div>
+<label for="rimfile">Load RIM tape:</label>
+<input type="file" id="rimfile">
+<script>
+  document.querySelector("#rimfile").addEventListener("change", async function(event) {
+    if(event.target.files.length > 0) {
+      console.log("Loading RIM file");
+      let buffer = await event.target.files[0].arrayBuffer();
+      console.log("RIM in memory");
+      rim(new Uint8Array(buffer));
+      console.log("RIM executing");
+    }
+  });
+</script>
 </body>
 </html>
