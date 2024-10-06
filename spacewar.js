@@ -52,7 +52,10 @@ function handleKeyup(e){
 }
 
 function frame(){
-	ctx.clearRect(0,0,550,550);
+	//ctx.clearRect(0,0,550,550);
+	ctx.fillStyle = "rgb(0 0 0 / 5%)";
+	ctx.fillRect(0, 0, 550, 550);
+	ctx.fillStyle = '#ffffff';
 	startingTime = elapsedTime;
 	while(elapsedTime - startingTime < 56000) {
 		step();
@@ -221,7 +224,7 @@ function dispatch(md) {
 		}
 		flag[nflag]=state;
 		break;
-	default:	console.log('Undefined instruction:', os(md), 'at', os(pc-1));
+	default:	console.log('Undefined instruction:', os(md), 'at', os(pc-1), 'opcode', (md>>13).toString(8));
     //Runtime.getRuntime().exit(0);
   }
 }
