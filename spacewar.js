@@ -3,6 +3,7 @@ var flag = [false, false, false, false, false, false, false];
 var sense = [false, false, false, false, false, false, false];
 var control=0;
 var elapsedTime = 0;
+var testWord = 0o001000;
 
 var timer, canvas, ctx;
 
@@ -214,6 +215,7 @@ function dispatch(md) {
 		if((y&0200)==0200) ac=0;
 		if((y&04000)==04000) io=0;
 		if((y&01000)==01000) ac^=0777777;
+		if((y&02000)==02000) ac|=testWord;
 		if((y&0400)==0400) panelrunpc = -1;
 		var nflag=y&7; 
 		if (nflag<2) break;

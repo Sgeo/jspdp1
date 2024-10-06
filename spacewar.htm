@@ -25,6 +25,37 @@
 </div>
 <label for="rimfile">Load RIM tape:</label>
 <input type="file" id="rimfile">
+<form id="testword_checkboxes">
+  <label>Test word</label>
+    <input type="checkbox">
+    <input type="checkbox">
+    <input type="checkbox">
+    <input type="checkbox">
+    <input type="checkbox">
+    <input type="checkbox">
+    <input type="checkbox">
+    <input type="checkbox">
+    <input type="checkbox">
+    <input type="checkbox">
+    <input type="checkbox">
+    <input type="checkbox">
+    <input type="checkbox">
+    <input type="checkbox">
+    <input type="checkbox">
+    <input type="checkbox">
+    <input type="checkbox">
+    <input type="checkbox">
+</form>
+<script>
+  document.querySelector("#testword_checkboxes").addEventListener("change", function(event) {
+    console.log(this.elements);
+    testWord = 0;
+    for(let i = 0; i < this.elements.length; i++) {
+      let bit = this.elements[i].value ? 1 : 0;
+      testWord = testWord | (bit << i);
+    }
+  });
+</script>
 <script>
   document.querySelector("#rimfile").addEventListener("change", async function(event) {
     if(event.target.files.length > 0) {
