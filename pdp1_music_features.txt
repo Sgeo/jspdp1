@@ -1,0 +1,21 @@
+Documenting what PDP-1 features (non-standard or need extra care in emulating) are needed for http://www.bitsavers.org/pdf/mit/rle_pdp1/samson_musicCompiler/MusicPlayerSource_Nov62.pdf
+
+Sequence break (probably), as seen by use of memory location 3 and esm/lsm instructions
+
+"to" uses iot 56 and 20. `iot 56` is cbs (clear sequence break system). 
+
+https://bitsavers.org/pdf/mit/rle_pdp1/memos/pdp35-2_sep71.pdf lists music hardware as 720n14, I don't think I see that in the 1962 program.
+
+I can't tell if the sequence break mechanism changed in that memo, or if it's just elaboration of what's in the handbook.
+
+Sense switches:
+
+4: Enable voice for PF4?
+5: Enable voice for PF5?
+6: Some interaction with test word?
+
+Documentation of purpose of different labels:
+
+n: Starting point. Puts `jmp to` into 7751 and halts. trioSonataII_binary.bin has a RIM `jmp 7751`, suggesting that `to` is the next step, initiated by RIMing the music.
+to: iot 56, iot 20. Does something weird with `ui`, particularly putting a `jmp ui+1` into place there.
+ui: Loads `m`'s address into 1, then loads `uu` into its starting jump, and flows into `uu`. A run once mechanism? Except repeating `to` re-allows that segment to run
