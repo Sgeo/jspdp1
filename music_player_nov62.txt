@@ -97,7 +97,7 @@ to,       iot 56
           cli 3
           esm
 
-inp,      lax nit
+inp,      law nit
           dac 1
 
 in,       jsp jr    /fa
