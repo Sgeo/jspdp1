@@ -1,0 +1,346 @@
+harmony p 3.1 r d 2b                    prs, 10/6/62
+
+                    bb=1600
+
+3/        rrb
+jx,       jmp
+
+jr,       dap jx
+          rpb-i
+
+jj,       lac i l1
+          sal 1s
+          add i l1
+          add ct1
+          dac ct1
+          spa i 40
+          clf 4
+          spa 40
+          stf 4
+
+          lac i l2
+          sal 1s
+          add i l2
+          add ct2
+          dac ct2
+          spa i 50
+          clf 5
+          spa 50
+          stf 5
+
+          lac i l3
+          sal 1s
+          add i l3
+          add ct3
+          dac ct3
+          spa i 60
+          lat 6
+          spa 60
+          lat 16
+          dac ttm
+          sal 1s
+          add ttm
+          add tme
+          dac tme
+
+ddd,      lac i 1
+          sad (dac ct1
+          jmp cr1
+          sad (dac ct2
+          jmp cr2
+          sad (dac ct3
+          jmp cr3
+          xct pni
+
+dri,      lac 0
+          lio 2
+          jmp i 1
+
+cr1,      lio ct1
+          dio 0
+          xct ddl
+          xct ddl
+          jmp dri
+
+cr2,      lio ct2
+          dio 0
+          xct ddl
+          jmp dri
+
+cr3,      lio ct3
+          dio 0
+          jmp dri
+
+pni,      xct (xct (xct (xct ddl
+ddl,      opr
+
+jq,       law ddl
+          dap bh
+          lio (m
+          lac (jmp uu
+          sas ui
+          dio 1
+          jmp jj
+
+to,       iot 56
+          iot 20
+          law ui 1
+          dap ui
+          law bb
+          dap inc
+          law inp
+          dap jx
+          law tb+1
+          dap l1
+          dap l2
+          dap l3
+          cli 3
+          esm
+
+inp,      lax nit
+          dac 1
+
+in,       jsp jr    /fa
+          spi
+          jmp jq
+          dio inq
+          dio sum
+          xct ddl
+          xct ddl
+          xct pni
+          jsp jr    /la
+          lac inq
+          dio inj
+          sub inj
+          dac inq
+          lac inj
+          add sum
+          dac sum
+          opr
+
+ine,      jsp jr    /wd
+
+inc,      dio
+          lac i inc
+          add sum
+          dac sum
+          idx inc
+          sad (dio 7700
+          jmp enh
+          isp inq
+          jmp ine
+          jsp jr    /sum
+          dio inj
+          lac inj
+          sub sum
+          sza
+          hlt
+          opr
+
+uin,      jmp in
+
+enh,      law (rpb-i
+          dap bh
+          law bb
+          dap inc
+
+ui,       jmp
+          law m
+          dac 1
+          law uu
+          dap ui
+
+uu,       isp inq
+          jmp ehg
+          law in
+          jmp ehh
+
+ehg,      law inc
+ehh,      dap jx
+          jmp jj
+
+tme,      0
+l1,       lac
+          add ct1
+          dac ct1
+          spa 1 40
+          clf 4
+          spa 40
+          stf 4
+
+l2,       lac
+          add ct2
+          dac ct2
+          spa i 50
+          clf 5
+          spa 50
+          stf 5
+
+l2,       lac
+          add ct3
+          dac ct3
+          spa i 60
+          lat 6
+          spa 60
+          lat 16
+          add tme
+          sma
+          skp 10
+          jda tme   /usual loop, takes 32 cycles
+
+j,        lac
+          sma
+          jmp sp
+          dac tme
+          idx j
+          lac i j
+          rcr 9s
+          rcr 3s
+          add (tb
+          szf i 3
+          jmp sik
+          dap jpr
+
+jpr,      lac
+          sar 7s
+          add i jpr
+          dac tv1
+          cla
+          rcl 6s
+          add (tb
+          dap l2
+          cla
+          rcl 6s
+          add (tb
+          dap jps
+
+jps,      lac
+          sar 7s
+          cma
+          add i jps
+          dac tv3
+          szs i 30
+          clf 3
+          xct pni
+          opr
+
+ijk,      idx j
+          sad (lac 7600
+
+bh,       xct .
+          sad (lac 7700
+          jmp mq
+
+adj,      lac i l1
+          sal 1s
+          add i l1
+          add ct1
+          dac ct1
+          spa i 40
+          clf 4
+          spa 40
+          stf 4
+
+          lac i l2
+          sal 1s
+          add i l2
+          add ct2
+          dac ct2
+          spa i 50
+          clf 5
+          spa 50
+          stf 5
+
+          lac i l3
+          sal 1s
+          add i l3
+          add ct3
+          dac ct3
+          spa i 60
+          lat 6
+          spa 60
+          lat 16
+          jmp l1
+
+sik,      szs 30
+          jmp sfl
+
+sij,      clf 3
+          dap l1
+          cla
+          rcl 6s
+          add (tb
+          dap l2
+          cla
+          rcl 6s
+          add (tb
+          dap l3
+
+          xct pni
+          xct .-1
+          xct .-1
+          jmp ijk
+
+sfl,      dap jpr
+          law tv1
+          dap l1
+          law tv3
+          dap l3
+          stf 3
+          jmp jpr
+
+sp,       sza i
+sp1,      jmp nch   /0, end
+rrr,      jsm       /1, more
+          rpb       /input
+          jmp to
+
+nch,      szs 20
+          jmp rrr
+
+n,        lac (jmp to
+          dac 7751
+          hlt cla cli-opr-opr+3
+
+m,        law bb
+          cli
+          dap j
+          jmp j
+
+mq,       law bb
+          dap j
+          jmp l1
+
+nit,      jmp .
+ct1,      0
+ct2,      0
+ct3,      0
+inq,      0
+ttm,      0
+inj,      0
+tv1,      0
+tv3,      0
+sum,      0
+
+tb,       000000    000000
+
+          002551    002674    003023    003157    003321    003471
+          003647    004034    004227    004432    004644    005067
+
+          005323    005570    006046    006336    006643    007163
+          007516    010067    010456    011064    011511    012156
+
+          012646    013357    014114    014676    015506    016345
+          017235    020157    021135    022150    023222    024335
+
+          025513    026736    030230    031574    033214    034712
+          036474    040336    042271    044317    046444    050672
+
+          053226    055674    060461    036670    066430    071624
+          075164    100674    104563    110637    115110    121564
+
+          126454              000052
+
+constants           end,
+
+start n
