@@ -1,4 +1,4 @@
-var ac=0, io=0, pc=4, y, ib, ov=0; 
+var ac=0, io=0, pc=4, y, ib, ov=0, bank=0; 
 var flag = [false, false, false, false, false, false, false];
 var sense = [false, false, false, false, false, false, false];
 var control=0;
@@ -64,63 +64,63 @@ function frame(){
 }
 
 function step(){
-	dispatch(memory[pc++]);
+	dispatch(memory[bank][pc++]);
 }
 
 function dispatch(md) {
 	elapsedTime += 5;
 	y=md&07777; ib=(md>>12)&1;
 	switch(md>>13) {
-	case AND: ea(); ac&=memory[y]; break;
-	case IOR: ea(); ac|=memory[y]; break;
-	case XOR: ea(); ac^=memory[y]; break;
-	case XCT: ea(); dispatch(memory[y]); break;
+	case AND: ea(); ac&=memory[bank][y]; break;
+	case IOR: ea(); ac|=memory[bank][y]; break;
+	case XOR: ea(); ac^=memory[bank][y]; break;
+	case XCT: ea(); dispatch(memory[bank][y]); break;
 	case CALJDA: 
 		var target=(ib==0)?64:y;
-		memory[target]=ac;
+		memory[bank][target]=ac;
 		ac=(ov<<17)+pc;
 		pc=target+1;
 		break;
-	case LAC: ea(); ac=memory[y]; break;
-	case LIO: ea(); io=memory[y]; break;
-	case DAC: ea(); memory[y]=ac; break;
-	case DAP: ea(); memory[y]=(memory[y]&0770000)+(ac&07777); break;
-	case DIO: ea(); memory[y]=io; break;
-	case DZM: ea(); memory[y]=0; break;
+	case LAC: ea(); ac=memory[bank][y]; break;
+	case LIO: ea(); io=memory[bank][y]; break;
+	case DAC: ea(); memory[bank][y]=ac; break;
+	case DAP: ea(); memory[bank][y]=(memory[bank][y]&0770000)+(ac&07777); break;
+	case DIO: ea(); memory[bank][y]=io; break;
+	case DZM: ea(); memory[bank][y]=0; break;
 	case ADD:
 		ea();
-		ac=ac+memory[y];
+		ac=ac+memory[bank][y];
 		ov=ac>>18;
 		ac=(ac+ov)&0777777;
 		if (ac==0777777) ac=0;
 		break;
 	case SUB:
 		ea();
-		var diffsigns=((ac>>17)^(memory[y]>>17))==1;
-		ac=ac+(memory[y]^0777777);
+		var diffsigns=((ac>>17)^(memory[bank][y]>>17))==1;
+		ac=ac+(memory[bank][y]^0777777);
 		ac=(ac+(ac>>18))&0777777;
 		if (ac==0777777) ac=0;
-		if (diffsigns&&(memory[y]>>17==ac>>17)) ov=1;
+		if (diffsigns&&(memory[bank][y]>>17==ac>>17)) ov=1;
 		break;
 	case IDX:
 		ea(); 
-		ac=memory[y]+1; 
+		ac=memory[bank][y]+1; 
 		if(ac==0777777) ac=0;
-		memory[y]=ac;
+		memory[bank][y]=ac;
 		break;
 	case ISP:
 		ea();
-		ac=memory[y]+1; 
+		ac=memory[bank][y]+1; 
 		if(ac==0777777) ac=0;
-		memory[y]=ac;
+		memory[bank][y]=ac;
 		if((ac&0400000)==0) pc++;
 		break;
-	case SAD: ea(); if(ac!=memory[y]) pc++; break;
-	case SAS: ea(); if(ac==memory[y]) pc++; break;
+	case SAD: ea(); if(ac!=memory[bank][y]) pc++; break;
+	case SAS: ea(); if(ac==memory[bank][y]) pc++; break;
 	case MUS:
 		ea();
 		if ((io&1)==1){
-			ac=ac+memory[y];
+			ac=ac+memory[bank][y];
 			ac=(ac+(ac>>18))&0777777;
 			if (ac==0777777) ac=0;
 		}
@@ -133,10 +133,10 @@ function dispatch(md) {
 		ac=(ac<<1|io>>17)&0777777;
 		io=((io<<1|acl)&0777777)^1;
 		if ((io&1)==1){
-			ac=ac+(memory[y]^0777777);
+			ac=ac+(memory[bank][y]^0777777);
 			ac=(ac+(ac>>18))&0777777;}
 		else {
-			ac=ac+1+memory[y];
+			ac=ac+1+memory[bank][y];
 			ac=(ac+(ac>>18))&0777777;
 		}
 		if (ac==0777777) ac=0;
@@ -238,8 +238,8 @@ function ea() {
 	while(true){
 		if (ib==0) return;
 		elapsedTime += 5;
-		ib=(memory[y]>>12)&1;
-		y=memory[y]&07777;
+		ib=(memory[bank][y]>>12)&1;
+		y=memory[bank][y]&07777;
 	}
 }
 
@@ -257,5 +257,5 @@ function os(n){
 }
     
 function regs(){
-	console.log('pc:', os(pc), 'mpc:', os(memory[pc]), 'ac:', os(ac), 'io;', os(io), 'ov:', ov);
+	console.log('pc:', os(pc), 'mpc:', os(memory[bank][pc]), 'ac:', os(ac), 'io;', os(io), 'ov:', ov);
 }
