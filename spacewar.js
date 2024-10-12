@@ -207,9 +207,11 @@ function dispatch(md) {
       	}	
       break;
 	case LAW: ac=(ib==0)?y:y^0777777; break;
-	case IOT: 
+	case IOT:
+		if ((y&077)==0) {break;} // Special wait, not implemented properly.
 		if ((y&077)==7) {dpy();break;};
 		if ((y&077)==011) {io = control; break;}
+		console.error("Unknown IOT", `0o${md.toString(8)}`);
 		break;
 	case OPR:	
 		if((y&0200)==0200) ac=0;
