@@ -6,7 +6,7 @@
 <style type="text/css">@import "spacewar.css";</style>
 <script type="text/javascript" src="spacewar.js"></script>
 <script type="text/javascript" src="spacewar.bin.js"></script>
-<script type="text/javascript" src="rimloader.js"></script>
+<script type="text/javascript" src="ptr.js"></script>
 <script type="text/javascript">
   if (!document.createElement('canvas').getContext) {
     window.location = "nocanvas.html";
@@ -62,7 +62,8 @@
       console.log("Loading RIM file");
       let buffer = await event.target.files[0].arrayBuffer();
       console.log("RIM in memory");
-      rim(new Uint8Array(buffer));
+      ptr.load(new Uint8Array(buffer));
+      ptr.rim();
       console.log("RIM executing");
     }
   });
