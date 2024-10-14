@@ -51,9 +51,10 @@
     console.log(this.elements);
     testWord = 0;
     for(let i = 0; i < this.elements.length; i++) {
-      let bit = this.elements[i].value ? 1 : 0;
+      let bit = this.elements[i].checked ? 1 : 0;
       testWord = testWord | (bit << i);
     }
+    console.log("Test word (in octal)", testWord.toString(8));
   });
 </script>
 <script>
