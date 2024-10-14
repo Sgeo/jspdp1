@@ -6,7 +6,7 @@ var sense = [false, false, false, false, false, false, false];
 var extend = 0;
 var control=0;
 var elapsedTime = 0;
-var testWord = 0o001000;
+var testWord = 0o000000;
 
 var timer, canvas, ctx;
 
