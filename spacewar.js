@@ -1,4 +1,4 @@
-var ac=0, io=0, pc=4, y, ib, ov=0, bank=0;
+var ac=0, io=0, pc=4, y, ib, ov=0, bank=0, ma=0, mb=0;
 // pc contains 12-bit address even in extended mode, 4 bit bank is in bank only.
 // instructions retrieving from pc or modifying pc or exposing pc need to take this into account.
 var flag = [false, false, false, false, false, false, false];
@@ -6,6 +6,7 @@ var sense = [false, false, false, false, false, false, false];
 var extend = 0;
 var control=0;
 var elapsedTime = 0;
+var running = true;
 var testWord = 0o000000;
 
 var timer, canvas, ctx;
@@ -62,69 +63,73 @@ function frame(){
 	ctx.fillStyle = '#ffffff';
 	startingTime = elapsedTime;
 	while(elapsedTime - startingTime < 56000) {
+		if(!running) {
+			break;
+		}
 		step();
 	}
 }
 
 function step(){
-	dispatch(memory[pc++]);
+	if(running) dispatch(memory[pc++]);
 }
 
 function dispatch(md) {
 	elapsedTime += 5;
-	pc = pc % 0o10000;
+	ma = pc;
+	//pc = pc % 0o10000;
 	y=md&07777; ib=(md>>12)&1;
 	switch(md>>13) {
-	case AND: ea(); ac&=memory[y]; break;
-	case IOR: ea(); ac|=memory[y]; break;
-	case XOR: ea(); ac^=memory[y]; break;
-	case XCT: ea(); dispatch(memory[y]); break;
+	case AND: ea(); ac&=memory[ma]; break;
+	case IOR: ea(); ac|=memory[ma]; break;
+	case XOR: ea(); ac^=memory[ma]; break;
+	case XCT: ea(); dispatch(memory[ma]); break;
 	case CALJDA: 
 		var target=(ib==0)?64:y;
 		memory[(bank<<12)+target]=ac;
 		ac=(ov<<17)+(extend<<16)+(extend ? (bank<<12) : 0)+pc; // TODO: Don't know if the bank bits are hidden in non-extend mode
 		pc=target+1;
 		break;
-	case LAC: ea(); ac=memory[y]; break;
-	case LIO: ea(); io=memory[y]; break;
-	case DAC: ea(); memory[y]=ac; break;
-	case DAP: ea(); memory[y]=(memory[y]&0770000)+(ac&07777); break;
-	case DIO: ea(); memory[y]=io; break;
-	case DZM: ea(); memory[y]=0; break;
+	case LAC: ea(); ac=memory[ma]; break;
+	case LIO: ea(); io=memory[ma]; break;
+	case DAC: ea(); memory[ma]=ac; break;
+	case DAP: ea(); memory[ma]=(memory[ma]&0770000)+(ac&07777); break;
+	case DIO: ea(); memory[ma]=io; break;
+	case DZM: ea(); memory[ma]=0; break;
 	case ADD:
 		ea();
-		ac=ac+memory[y];
+		ac=ac+memory[ma];
 		ov=ac>>18;
 		ac=(ac+ov)&0777777;
 		if (ac==0777777) ac=0;
 		break;
 	case SUB:
 		ea();
-		var diffsigns=((ac>>17)^(memory[y]>>17))==1;
-		ac=ac+(memory[y]^0777777);
+		var diffsigns=((ac>>17)^(memory[ma]>>17))==1;
+		ac=ac+(memory[ma]^0777777);
 		ac=(ac+(ac>>18))&0777777;
 		if (ac==0777777) ac=0;
-		if (diffsigns&&(memory[y]>>17==ac>>17)) ov=1;
+		if (diffsigns&&(memory[ma]>>17==ac>>17)) ov=1;
 		break;
 	case IDX:
 		ea(); 
-		ac=memory[y]+1; 
+		ac=memory[ma]+1; 
 		if(ac==0777777) ac=0;
-		memory[y]=ac;
+		memory[ma]=ac;
 		break;
 	case ISP:
 		ea();
-		ac=memory[y]+1; 
+		ac=memory[ma]+1; 
 		if(ac==0777777) ac=0;
-		memory[y]=ac;
+		memory[ma]=ac;
 		if((ac&0400000)==0) pc++;
 		break;
-	case SAD: ea(); if(ac!=memory[y]) pc++; break;
-	case SAS: ea(); if(ac==memory[y]) pc++; break;
+	case SAD: ea(); if(ac!=memory[ma]) pc++; break;
+	case SAS: ea(); if(ac==memory[ma]) pc++; break;
 	case MUS:
 		ea();
 		if ((io&1)==1){
-			ac=ac+memory[y];
+			ac=ac+memory[ma];
 			ac=(ac+(ac>>18))&0777777;
 			if (ac==0777777) ac=0;
 		}
@@ -137,16 +142,16 @@ function dispatch(md) {
 		ac=(ac<<1|io>>17)&0777777;
 		io=((io<<1|acl)&0777777)^1;
 		if ((io&1)==1){
-			ac=ac+(memory[y]^0777777);
+			ac=ac+(memory[ma]^0777777);
 			ac=(ac+(ac>>18))&0777777;}
 		else {
-			ac=ac+1+memory[y];
+			ac=ac+1+memory[ma];
 			ac=(ac+(ac>>18))&0777777;
 		}
 		if (ac==0777777) ac=0;
 		break;
-	case JMP: ea(); pc=y&0o7777; bank=y>>12; break;
-	case JSP: ea(); ac=(ov<<17)+(extend<<16)+(bank<<12)+pc; pc=y&0o7777; bank=y>>12; break;
+	case JMP: ea(); pc=ma&0o7777; bank=ma>>12; break;
+	case JSP: ea(); ac=(ov<<17)+(extend<<16)+(bank<<12)+pc; pc=ma&0o7777; bank=ma>>12; break;
 	case SKP:
 		var cond =
 			(((y&0100)==0100)&&(ac==0)) ||
@@ -225,7 +230,7 @@ function dispatch(md) {
 		if((y&04000)==04000) io=0;
 		if((y&01000)==01000) ac^=0777777;
 		if((y&02000)==02000) ac|=testWord;
-		if((y&0400)==0400) panelrunpc = -1;
+		if((y&0400)==0400) running=false;
 		var nflag=y&7; 
 		if (nflag<2) break;
 		var state=(y&010)==010;
@@ -235,26 +240,27 @@ function dispatch(md) {
 		}
 		flag[nflag]=state;
 		break;
-	default:	console.log('Undefined instruction:', os(md), 'at', os(pc-1), 'opcode', (md>>13).toString(8));
+	default:	console.log('Undefined instruction:', os(md), 'at', os(pc-1), 'opcode', (md>>13).toString(8)); running = false;
     //Runtime.getRuntime().exit(0);
   }
 }
 
 function ea() {
 	elapsedTime += 5;
+	ma = y;
 	if(!extend) {
 		while(true){
-			y = (bank<<12) + y;
+			ma = (bank<<12) + ma;
 			if (ib==0) return;
 			elapsedTime += 5;
-			ib=(memory[y]>>12)&1;
-			y=memory[y]&07777;
+			ib=(memory[ma]>>12)&1;
+			ma=memory[ma]&07777;
 		}
 	} else {
-		y = (bank<<12) + y;
+		ma = (bank<<12) + ma;
 		if (ib==0) return;
 		elasedTime += 5;
-		y=memory[y]&&0o177777;
+		ma=memory[ma]&&0o177777;
 	}
 }
 
