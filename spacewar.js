@@ -230,7 +230,7 @@ function dispatch(md) {
 	case IOT:
 		if ((y&077)==0) {break;} // Special wait, not implemented properly.
 		if ((y&077)==7) {dpy();break;};
-		if ((ib && ((y&0o77)==2))) {ptr.rpbi(); break;}
+		if ((ib && ((y&0o77)==2))) {io=ptr.rpbi(); break;}
 		if ((y&077)==011) {io = control; break;}
 		if ((y&0o7777)==0o4074) {extend = 1; break;} // eem
 		if ((y&0o7777)==0o0074) {extend = 0; break;} // lem
