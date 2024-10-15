@@ -29,10 +29,13 @@
   <div>MEMORY ADDRESS: <span id="maelem"></span></div>
   <div>ACCUMULATOR: <span id="acelem"></span></div>
   <div>IN - OUT: <span id="ioelem"></span></div>
-  <div>RUN: <input type="checkbox" id="runelem"></div>
+  <div>RUN: <input type="checkbox" id="runelem" disabled></div>
 </div>
-<label for="rimfile">Load RIM tape:</label>
-<input type="file" id="rimfile">
+<button onclick="running = true;" disabled>START (not working yet)</button>
+<button onclick="running = false;">STOP</button>
+<button onclick="running = true;">CONTINUE</button>
+<button onclick="ptr.rim();">READ IN</button>
+<label for="tape">Load tape...</label><input type="file" id="tape">
 <form id="testword_checkboxes">
   <label>Test word</label>
     <input type="checkbox">
@@ -66,14 +69,10 @@
   });
 </script>
 <script>
-  document.querySelector("#rimfile").addEventListener("change", async function(event) {
+  document.querySelector("#tape").addEventListener("change", async function(event) {
     if(event.target.files.length > 0) {
-      console.log("Loading RIM file");
       let buffer = await event.target.files[0].arrayBuffer();
-      console.log("RIM in memory");
       ptr.load(new Uint8Array(buffer));
-      ptr.rim();
-      console.log("RIM executing");
     }
   });
 </script>
