@@ -4,6 +4,7 @@
 <meta name="keywords" content="Spacewar, game, original, PDP-1, emulator, gerasimov, silverman, Graetz, Russell, Wiitanen">
 <meta http-equiv="X-UA-Compatible" content="IE=9" />
 <style type="text/css">@import "spacewar.css";</style>
+<script type="text/javascript" src="pdp1console.js"></script>
 <script type="text/javascript" src="spacewar.js"></script>
 <script type="text/javascript" src="spacewar.bin.js"></script>
 <script type="text/javascript" src="ptr.js"></script>
@@ -22,6 +23,13 @@
 <div class="spacewar">
 <canvas class="spacewar" id="swcanvas"></canvas>
 </div>
+</div>
+<div>
+  <div>PROGRAM COUNTER: <span id="bankelem"></span> <span id="pcelem"></span></div>
+  <div>MEMORY ADDRESS: <span id="maelem"></span></div>
+  <div>ACCUMULATOR: <span id="acelem"></span></div>
+  <div>IN - OUT: <span id="ioelem"></span></div>
+  <div>RUN: <input type="checkbox" id="runelem"></div>
 </div>
 <label for="rimfile">Load RIM tape:</label>
 <input type="file" id="rimfile">

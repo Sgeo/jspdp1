@@ -1,3 +1,7 @@
+function oct(num) {
+	return `0o${num.toString(8)}`;
+}
+
 var ac=0, io=0, pc=4, y, ib, ov=0, bank=0, ma=0, mb=0;
 // pc contains 12-bit address even in extended mode, 4 bit bank is in bank only.
 // instructions retrieving from pc or modifying pc or exposing pc need to take this into account.
@@ -8,6 +12,8 @@ var control=0;
 var elapsedTime = 0;
 var running = true;
 var testWord = 0o000000;
+var cpuhistory = false;
+var pdp1console;
 
 var timer, canvas, ctx;
 
@@ -19,6 +25,7 @@ var AND=001, IOR=002, XOR=003, XCT=004, CALJDA=007,
     JMP=030, JSP=031, SKP=032, SFT=033, LAW=034, IOT=035, OPR=037;
 
 function setup(){
+	pdp1console = new PDP1Console;
 	canvas = document.getElementById('swcanvas');
 	canvas.width = 550;
 	canvas.height =550;
@@ -72,12 +79,16 @@ function frame(){
 
 function step(){
 	if(running) dispatch(memory[pc++]);
+	pdp1console.display();
 }
 
 function dispatch(md) {
 	elapsedTime += 5;
 	ma = pc;
 	//pc = pc % 0o10000;
+	if(cpuhistory) {
+		console.log(oct(md));
+	}
 	y=md&07777; ib=(md>>12)&1;
 	switch(md>>13) {
 	case AND: ea(); ac&=memory[ma]; break;
@@ -224,13 +235,14 @@ function dispatch(md) {
 		if ((y&0o7777)==0o4074) {extend = 1; break;} // eem
 		if ((y&0o7777)==0o0074) {extend = 0; break;} // lem
 		console.error("Unknown IOT", `0o${md.toString(8)}`);
+		running = false;
 		break;
 	case OPR:	
 		if((y&0200)==0200) ac=0;
 		if((y&04000)==04000) io=0;
 		if((y&01000)==01000) ac^=0777777;
 		if((y&02000)==02000) ac|=testWord;
-		if((y&0400)==0400) running=false;
+		if((y&0400)==0400) {running=false; console.log("HALT");}
 		var nflag=y&7; 
 		if (nflag<2) break;
 		var state=(y&010)==010;
