@@ -41,8 +41,9 @@
   document.querySelector("#autotest").addEventListener("click", async function() {
     function waitForHalt() {
       return new Promise((resolve, reject) => {
-        setInterval(function() {
+        let timer = setInterval(function() {
           if(!running) {
+            clearInterval(timer);
             resolve();
           }
         }, 30);
@@ -52,8 +53,8 @@
     sense.fill(false);
     ptr.rim();
     running = true;
-    await waitForHalt();
-    // Skip test 2
+    await waitForHalt(); // Program 2's HLT test.
+    // Skip rest of program 2
     sense.fill(true);
     sense[0] = false;
     sense[1] = false;
