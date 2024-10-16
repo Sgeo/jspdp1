@@ -78,13 +78,16 @@ function frame(){
 }
 
 function step(){
-	if(running) dispatch(memory[pc++]);
+	if(running) {
+		ma = pc++;
+		pc = pc % 0o10000;
+		dispatch(memory[ma])
+	}
 	pdp1console.display();
 }
 
 function dispatch(md) {
 	elapsedTime += 5;
-	ma = pc;
 	//pc = pc % 0o10000;
 	if(cpuhistory) {
 		console.log(oct(md));
@@ -171,8 +174,7 @@ function dispatch(md) {
 			(((y&01000)==01000)&&(ov==0)) ||
 			(((y&02000)==02000)&&(io>>17==0))||
 			(((y&7)!=0)&&!flag[y&7])||
-			(((y&070)!=0)&&!sense[(y&070)>>3])||
-			((y&070)==010);
+			(((y&070)!=0)&&!sense[(y&070)>>3]);
 		if (ib==0) {if (cond) pc++;}
 		else {if (!cond) pc++;}
 		if ((y&01000)==01000) ov=0;
