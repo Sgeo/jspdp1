@@ -24,6 +24,22 @@ var AND=001, IOR=002, XOR=003, XCT=004, CALJDA=007,
     ADD=020, SUB=021, IDX=022, ISP=023, SAD=024, SAS=025, MUS=026, DIS=027,
     JMP=030, JSP=031, SKP=032, SFT=033, LAW=034, IOT=035, OPR=037;
 
+function eac(num) {
+	// End-around carry,
+	// In one's complement, if a carry is generated, that carry gets added to the number
+	// Instead of being dropped
+	let c = num>>18;
+	return (num&0o777777)+c;
+}
+
+function fixMinusZero(num) {
+	if(num===0o777777) {
+		return 0;
+	} else {
+		return num;
+	}
+}
+
 function setup(){
 	pdp1console = new PDP1Console;
 	canvas = document.getElementById('swcanvas');
@@ -127,15 +143,17 @@ function dispatch(md) {
 		if (diffsigns&&(memory[ma]>>17==ac>>17)) ov=1;
 		break;
 	case IDX:
-		ea(); 
-		ac=memory[ma]+1; 
-		if(ac==0o1000000) ac=0;
+		ea();
+		ac=memory[ma]+1;
+		ac=eac(ac);
+		ac=fixMinusZero(ac);
 		memory[ma]=ac;
 		break;
 	case ISP:
 		ea();
 		ac=memory[ma]+1; 
-		if(ac==0o1000000) ac=0;
+		ac=eac(ac);
+		ac=fixMinusZero(ac);
 		memory[ma]=ac;
 		if((ac&0400000)==0) pc++;
 		break;
