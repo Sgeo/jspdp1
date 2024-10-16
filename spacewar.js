@@ -116,26 +116,26 @@ function dispatch(md) {
 		ac=ac+memory[ma];
 		ov=ac>>18;
 		ac=(ac+ov)&0777777;
-		if (ac==0777777) ac=0;
+		if (ac==0777777) ac=0; // TODO: This has to be wrong
 		break;
 	case SUB:
 		ea();
 		var diffsigns=((ac>>17)^(memory[ma]>>17))==1;
 		ac=ac+(memory[ma]^0777777);
 		ac=(ac+(ac>>18))&0777777;
-		if (ac==0777777) ac=0;
+		if (ac==0777777) ac=0; // TODO: Sus
 		if (diffsigns&&(memory[ma]>>17==ac>>17)) ov=1;
 		break;
 	case IDX:
 		ea(); 
 		ac=memory[ma]+1; 
-		if(ac==0777777) ac=0;
+		if(ac==0o1000000) ac=0;
 		memory[ma]=ac;
 		break;
 	case ISP:
 		ea();
 		ac=memory[ma]+1; 
-		if(ac==0777777) ac=0;
+		if(ac==0o1000000) ac=0;
 		memory[ma]=ac;
 		if((ac&0400000)==0) pc++;
 		break;
@@ -163,7 +163,7 @@ function dispatch(md) {
 			ac=ac+1+memory[ma];
 			ac=(ac+(ac>>18))&0777777;
 		}
-		if (ac==0777777) ac=0;
+		if (ac==0o1000000) ac=0;
 		break;
 	case JMP: ea(); pc=ma&0o7777; bank=ma>>12; break;
 	case JSP: ea(); ac=(ov<<17)+(extend<<16)+(bank<<12)+pc; pc=ma&0o7777; bank=ma>>12; break;
