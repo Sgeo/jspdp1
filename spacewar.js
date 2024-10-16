@@ -6,7 +6,7 @@ var ac=0, io=0, pc=4, y, ib, ov=0, bank=0, ma=0, mb=0;
 // pc contains 12-bit address even in extended mode, 4 bit bank is in bank only.
 // instructions retrieving from pc or modifying pc or exposing pc need to take this into account.
 var flag = [false, false, false, false, false, false, false];
-var sense = [false, false, false, false, false, false, false];
+var sense = [false, false, false, false, false, false];
 var extend = 0;
 var control=0;
 var elapsedTime = 0;
@@ -174,7 +174,8 @@ function dispatch(md) {
 			(((y&01000)==01000)&&(ov==0)) ||
 			(((y&02000)==02000)&&(io>>17==0))||
 			(((y&7)!=0)&&!flag[y&7])||
-			(((y&070)!=0)&&!sense[(y&070)>>3]);
+			(((y&070)!=0)&&((y&070)!=070)&&!sense[((y&070)>>3)-1])||
+			((y&070)==070)&&sense.every(b => !b);
 		if (ib==0) {if (cond) pc++;}
 		else {if (!cond) pc++;}
 		if ((y&01000)==01000) ov=0;
