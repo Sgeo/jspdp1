@@ -29,7 +29,7 @@ function eac(num) {
 	// In one's complement, if a carry is generated, that carry gets added to the number
 	// Instead of being dropped
 	let c = num>>18;
-	return (num&0o777777)+c;
+	return (num+c)&0o777777;
 }
 
 function fixMinusZero(num) {
@@ -38,6 +38,13 @@ function fixMinusZero(num) {
 	} else {
 		return num;
 	}
+}
+
+function sign(num) {
+	// Returns the sign bit
+	// 0 for positive number, 1 for negative number
+
+	return (num&0o400000)>>17;
 }
 
 function setup(){
@@ -129,10 +136,15 @@ function dispatch(md) {
 	case DZM: ea(); memory[ma]=0; break;
 	case ADD:
 		ea();
+		let oldsign = sign(ac);
 		ac=ac+memory[ma];
-		ov=ac>>18;
-		ac=(ac+ov)&0777777;
-		if (ac==0777777) ac=0; // TODO: This has to be wrong
+		let memsign = sign(memory[ma]);
+		ac=eac(ac);
+		let newsign = sign(ac);
+		ac=fixMinusZero(ac);
+		if(memsign === oldsign && oldsign !== newsign) {
+			ov = 1;
+		}
 		break;
 	case SUB:
 		ea();
