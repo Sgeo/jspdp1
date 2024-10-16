@@ -36,6 +36,34 @@
 <button onclick="running = true;">CONTINUE</button>
 <button onclick="ptr.rim();">READ IN</button>
 <label for="tape">Load tape...</label><input type="file" id="tape">
+<button id="autotest">Test (insert digital-1-12-m-rim.bin first)</button>
+<script>
+  document.querySelector("#autotest").addEventListener("click", async function() {
+    function waitForHalt() {
+      return new Promise((resolve, reject) => {
+        setInterval(function() {
+          if(!running) {
+            resolve();
+          }
+        }, 30);
+      });
+    }
+    running = false;
+    sense.fill(false);
+    ptr.rim();
+    running = true;
+    await waitForHalt();
+    // Skip test 2
+    sense.fill(true);
+    sense[0] = false;
+    sense[1] = false;
+    testWord = 0o777777;
+    ptr.rim();
+    running = true;
+    await waitForHalt();
+    alert(`Program: ${oct(memory[0])}\nMA: ${oct(ma)}`);
+  });
+</script>
 <form id="testword_checkboxes">
   <label>Test word</label>
     <input type="checkbox">
