@@ -20,7 +20,7 @@ var timer, canvas, ctx;
 var k17=0400000, k18=01000000, k19=02000000, k35=0400000000000;
 
 var AND=001, IOR=002, XOR=003, XCT=004, CALJDA=007,
-    LAC=010, LIO=011, DAC=012, DAP=013, DIO=015, DZM=016,
+    LAC=010, LIO=011, DAC=012, DAP=013, DIO=015, DZM=016, DIP=014,
     ADD=020, SUB=021, IDX=022, ISP=023, SAD=024, SAS=025, MUS=026, DIS=027,
     JMP=030, JSP=031, SKP=032, SFT=033, LAW=034, IOT=035, OPR=037;
 
@@ -108,6 +108,7 @@ function dispatch(md) {
 	case LIO: ea(); io=memory[ma]; break;
 	case DAC: ea(); memory[ma]=ac; break;
 	case DAP: ea(); memory[ma]=(memory[ma]&0770000)+(ac&07777); break;
+	case DIP: ea(); memory[ma]=(ac&0o770000)|(memory[ma]&0o007777); break;
 	case DIO: ea(); memory[ma]=io; break;
 	case DZM: ea(); memory[ma]=0; break;
 	case ADD:
