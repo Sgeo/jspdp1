@@ -306,7 +306,7 @@ function ea() {
 	} else {
 		ma = (bank<<12) + ma;
 		if (ib==0) return;
-		elasedTime += 5;
+		elapsedTime += 5;
 		ma=memory[ma]&&0o177777;
 	}
 }
