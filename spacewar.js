@@ -124,7 +124,7 @@ function dispatch(md) {
 	case CALJDA: 
 		var target=(ib==0)?64:y;
 		memory[(bank<<12)+target]=ac;
-		ac=(ov<<17)+(extend<<16)+(extend ? (bank<<12) : 0)+pc; // TODO: Don't know if the bank bits are hidden in non-extend mode
+		ac=(ov<<17)+(extend<<16)+(bank<<12)+pc; // TODO: Don't know if the bank bits are hidden in non-extend mode
 		pc=target+1;
 		break;
 	case LAC: ea(); ac=memory[ma]; break;
