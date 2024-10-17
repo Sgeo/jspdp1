@@ -5,7 +5,7 @@ function oct(num) {
 var ac=0, io=0, pc=4, y, ib, ov=0, bank=0, ma=0, mb=0;
 // pc contains 12-bit address even in extended mode, 4 bit bank is in bank only.
 // instructions retrieving from pc or modifying pc or exposing pc need to take this into account.
-var flag = [false, false, false, false, false, false, false];
+var flag = [false, false, false, false, false, false];
 var sense = [false, false, false, false, false, false];
 var extend = 0;
 var control=0;
@@ -204,7 +204,8 @@ function dispatch(md) {
 			(((y&0400)==0400)&&(ac>>17==1)) ||
 			(((y&01000)==01000)&&(ov==0)) ||
 			(((y&02000)==02000)&&(io>>17==0))||
-			(((y&7)!=0)&&!flag[y&7])||
+			(((y&7)!=0)&&((y&7)!=7)&&!flag[(y&7) - 1])||
+			((y&7)==7)&&flag.every(b => !b)||
 			(((y&070)!=0)&&((y&070)!=070)&&!sense[((y&070)>>3)-1])||
 			((y&070)==070)&&sense.every(b => !b);
 		if (ib==0) {if (cond) pc++;}
@@ -278,13 +279,13 @@ function dispatch(md) {
 		if((y&02000)==02000) ac|=testWord;
 		if((y&0400)==0400) {running=false; console.log("HALT");}
 		var nflag=y&7; 
-		if (nflag<2) break;
+		if (nflag<1) break;
 		var state=(y&010)==010;
 		if (nflag==7) {
-			for (var i=2;i<7;i++) flag[i]=state;
+			for (var i=0;i<6;i++) flag[i]=state;
 			break;
 		}
-		flag[nflag]=state;
+		flag[nflag-1]=state;
 		break;
 	default:	console.log('Undefined instruction:', os(md), 'at', os(pc-1), 'opcode', (md>>13).toString(8)); running = false;
     //Runtime.getRuntime().exit(0);
