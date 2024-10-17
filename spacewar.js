@@ -102,8 +102,9 @@ function frame(){
 
 function step(){
 	if(running) {
-		ma = pc++;
-		pc = pc % 0o10000;
+		ma = (bank<<12)|(pc&0o7777);
+		pc++;
+		pc = pc&0o7777;
 		dispatch(memory[ma])
 	}
 	pdp1console.display();
@@ -113,7 +114,7 @@ function dispatch(md) {
 	elapsedTime += 5;
 	//pc = pc % 0o10000;
 	if(cpuhistory) {
-		console.log(oct(md));
+		console.log(`bank: ${oct(bank)}, pc: ${oct(pc)}, ma: ${oct(ma)}, instr: ${oct(md)}`);
 	}
 	y=md&07777; ib=(md>>12)&1;
 	switch(md>>13) {
@@ -307,7 +308,7 @@ function ea() {
 		ma = (bank<<12) + ma;
 		if (ib==0) return;
 		elapsedTime += 5;
-		ma=memory[ma]&&0o177777;
+		ma=memory[ma]&0o177777;
 	}
 }
 
