@@ -24,12 +24,168 @@
 <canvas class="spacewar" id="swcanvas"></canvas>
 </div>
 </div>
-<div>
-  <div>PROGRAM COUNTER: <span id="bankelem"></span> <span id="pcelem"></span></div>
-  <div>MEMORY ADDRESS: <span id="maelem"></span></div>
-  <div>ACCUMULATOR: <span id="acelem"></span></div>
-  <div>IN - OUT: <span id="ioelem"></span></div>
-  <div>RUN: <input type="checkbox" id="runelem" disabled></div>
+<div id="console">
+  <div>EXTENSION and PROGRAM COUNTER</div>
+  <div>
+    <input type="checkbox" disabled data-console="bank">
+    |
+    <input type="checkbox" disabled data-console="bank">
+    <input type="checkbox" disabled data-console="bank">
+    <input type="checkbox" disabled data-console="bank">
+    |
+    <input type="checkbox" disabled data-console="pc">
+    <input type="checkbox" disabled data-console="pc">
+    <input type="checkbox" disabled data-console="pc">
+    |
+    <input type="checkbox" disabled data-console="pc">
+    <input type="checkbox" disabled data-console="pc">
+    <input type="checkbox" disabled data-console="pc">
+    |
+    <input type="checkbox" disabled data-console="pc">
+    <input type="checkbox" disabled data-console="pc">
+    <input type="checkbox" disabled data-console="pc">
+    |
+    <input type="checkbox" disabled data-console="pc">
+    <input type="checkbox" disabled data-console="pc">
+    <input type="checkbox" disabled data-console="pc">
+  </div>
+  <div>EXTENSION and MEMORY ADDRESS</div>
+  <div>
+    <input type="checkbox" disabled data-console="ma">
+    |
+    <input type="checkbox" disabled data-console="ma">
+    <input type="checkbox" disabled data-console="ma">
+    <input type="checkbox" disabled data-console="ma">
+    |
+    <input type="checkbox" disabled data-console="ma">
+    <input type="checkbox" disabled data-console="ma">
+    <input type="checkbox" disabled data-console="ma">
+    |
+    <input type="checkbox" disabled data-console="ma">
+    <input type="checkbox" disabled data-console="ma">
+    <input type="checkbox" disabled data-console="ma">
+    |
+    <input type="checkbox" disabled data-console="ma">
+    <input type="checkbox" disabled data-console="ma">
+    <input type="checkbox" disabled data-console="ma">
+    |
+    <input type="checkbox" disabled data-console="ma">
+    <input type="checkbox" disabled data-console="ma">
+    <input type="checkbox" disabled data-console="ma">
+  </div>
+  <div>
+    MEMORY BUFFER (not implemented)
+  </div>
+  <div>
+    ACCUMULATOR
+  </div>
+  <div>
+    <input type="checkbox" disabled data-console="ac">
+    <input type="checkbox" disabled data-console="ac">
+    <input type="checkbox" disabled data-console="ac">
+    |
+    <input type="checkbox" disabled data-console="ac">
+    <input type="checkbox" disabled data-console="ac">
+    <input type="checkbox" disabled data-console="ac">
+    |
+    <input type="checkbox" disabled data-console="ac">
+    <input type="checkbox" disabled data-console="ac">
+    <input type="checkbox" disabled data-console="ac">
+    |
+    <input type="checkbox" disabled data-console="ac">
+    <input type="checkbox" disabled data-console="ac">
+    <input type="checkbox" disabled data-console="ac">
+    |
+    <input type="checkbox" disabled data-console="ac">
+    <input type="checkbox" disabled data-console="ac">
+    <input type="checkbox" disabled data-console="ac">
+    |
+    <input type="checkbox" disabled data-console="ac">
+    <input type="checkbox" disabled data-console="ac">
+    <input type="checkbox" disabled data-console="ac">
+  </div>
+  <div>
+    IN - OUT
+  </div>
+  <div>
+    <input type="checkbox" disabled data-console="io">
+    <input type="checkbox" disabled data-console="io">
+    <input type="checkbox" disabled data-console="io">
+    |
+    <input type="checkbox" disabled data-console="io">
+    <input type="checkbox" disabled data-console="io">
+    <input type="checkbox" disabled data-console="io">
+    |
+    <input type="checkbox" disabled data-console="io">
+    <input type="checkbox" disabled data-console="io">
+    <input type="checkbox" disabled data-console="io">
+    |
+    <input type="checkbox" disabled data-console="io">
+    <input type="checkbox" disabled data-console="io">
+    <input type="checkbox" disabled data-console="io">
+    |
+    <input type="checkbox" disabled data-console="io">
+    <input type="checkbox" disabled data-console="io">
+    <input type="checkbox" disabled data-console="io">
+    |
+    <input type="checkbox" disabled data-console="io">
+    <input type="checkbox" disabled data-console="io">
+    <input type="checkbox" disabled data-console="io">
+  </div>
+  <div>
+    EXTENSION and ADDRESS
+  </div>
+  <div>
+    <input type="checkbox"  data-console="ta">
+    |
+    <input type="checkbox"  data-console="ta">
+    <input type="checkbox"  data-console="ta">
+    <input type="checkbox"  data-console="ta">
+    |
+    <input type="checkbox"  data-console="ta">
+    <input type="checkbox"  data-console="ta">
+    <input type="checkbox"  data-console="ta">
+    |
+    <input type="checkbox"  data-console="ta">
+    <input type="checkbox"  data-console="ta">
+    <input type="checkbox"  data-console="ta">
+    |
+    <input type="checkbox"  data-console="ta">
+    <input type="checkbox"  data-console="ta">
+    <input type="checkbox"  data-console="ta">
+    |
+    <input type="checkbox"  data-console="ta">
+    <input type="checkbox"  data-console="ta">
+    <input type="checkbox"  data-console="ta">
+  </div>
+  <div>
+    TEST WORD
+  </div>
+  <div>
+    <input type="checkbox"  data-console="tw">
+    <input type="checkbox"  data-console="tw">
+    <input type="checkbox"  data-console="tw">
+    |
+    <input type="checkbox"  data-console="tw">
+    <input type="checkbox"  data-console="tw">
+    <input type="checkbox"  data-console="tw">
+    |
+    <input type="checkbox"  data-console="tw">
+    <input type="checkbox"  data-console="tw">
+    <input type="checkbox"  data-console="tw">
+    |
+    <input type="checkbox"  data-console="tw">
+    <input type="checkbox"  data-console="tw">
+    <input type="checkbox"  data-console="tw">
+    |
+    <input type="checkbox"  data-console="tw">
+    <input type="checkbox"  data-console="tw">
+    <input type="checkbox"  data-console="tw">
+    |
+    <input type="checkbox"  data-console="tw">
+    <input type="checkbox"  data-console="tw">
+    <input type="checkbox"  data-console="tw">
+  </div>
 </div>
 <button onclick="running = true;" disabled>START (not working yet)</button>
 <button onclick="running = false;">STOP</button>
@@ -63,38 +219,6 @@
     running = true;
     await waitForHalt();
     alert(`Program: ${oct(memory[0])}\nMA: ${oct(ma)}`);
-  });
-</script>
-<form id="testword_checkboxes">
-  <label>Test word</label>
-    <input type="checkbox">
-    <input type="checkbox">
-    <input type="checkbox">
-    <input type="checkbox">
-    <input type="checkbox">
-    <input type="checkbox">
-    <input type="checkbox">
-    <input type="checkbox">
-    <input type="checkbox">
-    <input type="checkbox">
-    <input type="checkbox">
-    <input type="checkbox">
-    <input type="checkbox">
-    <input type="checkbox">
-    <input type="checkbox">
-    <input type="checkbox">
-    <input type="checkbox">
-    <input type="checkbox">
-</form>
-<script>
-  document.querySelector("#testword_checkboxes").addEventListener("change", function(event) {
-    console.log(this.elements);
-    testWord = 0;
-    for(let i = 0; i < this.elements.length; i++) {
-      let bit = this.elements[i].checked ? 1 : 0;
-      testWord = testWord | (bit << i);
-    }
-    console.log("Test word (in octal)", testWord.toString(8));
   });
 </script>
 <script>
