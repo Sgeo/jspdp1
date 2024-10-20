@@ -121,57 +121,60 @@ function handleKeyup(e){
 	if (c=='L') control &= ~0400000;
 }
 
+let stepgen;
 function frame(){
+	if(!stepgen) {
+		stepgen = step();
+	}
 	//ctx.clearRect(0,0,550,550);
 	ctx.fillStyle = "rgb(0 0 0 / 5%)";
 	ctx.fillRect(0, 0, 550, 550);
 	ctx.fillStyle = '#ffffff';
 	startingTime = elapsedTime;
 	pdp1console.display();
-	while(elapsedTime - startingTime < 56000) {
-		if(!running) {
-			break;
+	for(let i = 0; i < (56000/5); i++) {
+		stepgen.next();
+	}
+}
+
+function* step(){
+	while(true) {
+		yield;
+		if(running) {
+			ma = (bank<<12)|(pc&0o7777);
+			pc++;
+			pc = pc&0o7777;
+			yield* dispatch(memory[ma]);
 		}
-		step();
 	}
 }
 
-function step(){
-	if(running) {
-		ma = (bank<<12)|(pc&0o7777);
-		pc++;
-		pc = pc&0o7777;
-		dispatch(memory[ma])
-	}
-}
-
-function dispatch(md) {
-	elapsedTime += 5;
+function* dispatch(md) {
 	//pc = pc % 0o10000;
 	if(cpuhistory) {
 		console.log(`bank: ${oct(bank)}, pc: ${oct(pc)}, ma: ${oct(ma)}, instr: ${oct(md)}`);
 	}
 	y=md&07777; ib=(md>>12)&1;
 	switch(md>>13) {
-	case AND: ea(); ac&=memory[ma]; break;
-	case IOR: ea(); ac|=memory[ma]; break;
-	case XOR: ea(); ac^=memory[ma]; break;
-	case XCT: ea(); dispatch(memory[ma]); break;
+	case AND: yield* ea(); ac&=memory[ma]; break;
+	case IOR: yield* ea(); ac|=memory[ma]; break;
+	case XOR: yield* ea(); ac^=memory[ma]; break;
+	case XCT: yield* ea(); yield* dispatch(memory[ma]); break;
 	case CALJDA: 
 		var target=(ib==0)?64:y;
 		memory[(bank<<12)+target]=ac;
 		ac=(ov<<17)+(extend<<16)+(bank<<12)+pc; // TODO: Don't know if the bank bits are hidden in non-extend mode
 		pc=target+1;
 		break;
-	case LAC: ea(); ac=memory[ma]; break;
-	case LIO: ea(); io=memory[ma]; break;
-	case DAC: ea(); memory[ma]=ac; break;
-	case DAP: ea(); memory[ma]=(memory[ma]&0770000)+(ac&07777); break;
-	case DIP: ea(); memory[ma]=(ac&0o770000)|(memory[ma]&0o007777); break;
-	case DIO: ea(); memory[ma]=io; break;
-	case DZM: ea(); memory[ma]=0; break;
+	case LAC: yield* ea(); ac=memory[ma]; break;
+	case LIO: yield* ea(); io=memory[ma]; break;
+	case DAC: yield* ea(); memory[ma]=ac; break;
+	case DAP: yield* ea(); memory[ma]=(memory[ma]&0770000)+(ac&07777); break;
+	case DIP: yield* ea(); memory[ma]=(ac&0o770000)|(memory[ma]&0o007777); break;
+	case DIO: yield* ea(); memory[ma]=io; break;
+	case DZM: yield* ea(); memory[ma]=0; break;
 	case ADD:
-		ea();
+		yield* ea();
 		let oldsign = sign(ac);
 		ac=ac+memory[ma];
 		let memsign = sign(memory[ma]);
@@ -183,7 +186,7 @@ function dispatch(md) {
 		}
 		break;
 	case SUB:
-		ea();
+		yield* ea();
 		var diffsigns=((ac>>17)^(memory[ma]>>17))==1;
 		ac=ac+(memory[ma]^0777777);
 		ac=(ac+(ac>>18))&0777777;
@@ -191,24 +194,24 @@ function dispatch(md) {
 		if (diffsigns&&(memory[ma]>>17==ac>>17)) ov=1;
 		break;
 	case IDX:
-		ea();
+		yield* ea();
 		ac=memory[ma]+1;
 		ac=eac(ac);
 		ac=fixMinusZero(ac);
 		memory[ma]=ac;
 		break;
 	case ISP:
-		ea();
+		yield* ea();
 		ac=memory[ma]+1; 
 		ac=eac(ac);
 		ac=fixMinusZero(ac);
 		memory[ma]=ac;
 		if((ac&0400000)==0) pc++;
 		break;
-	case SAD: ea(); if(ac!=memory[ma]) pc++; break;
-	case SAS: ea(); if(ac==memory[ma]) pc++; break;
+	case SAD: yield* ea(); if(ac!=memory[ma]) pc++; break;
+	case SAS: yield* ea(); if(ac==memory[ma]) pc++; break;
 	case MUS:
-		ea();
+		yield* ea();
 		if ((io&1)==1){
 			ac=ac+memory[ma];
 			ac=(ac+(ac>>18))&0777777;
@@ -218,7 +221,7 @@ function dispatch(md) {
 		ac>>=1;
 		break;
 	case DIS:
-		ea();
+		yield* ea();
 		var acl=ac>>17;
 		ac=(ac<<1|io>>17)&0777777;
 		io=((io<<1|acl)&0777777)^1;
@@ -231,8 +234,8 @@ function dispatch(md) {
 		}
 		if (ac==0o1000000) ac=0;
 		break;
-	case JMP: ea(); pc=ma&0o7777; bank=ma>>12; break;
-	case JSP: ea(); ac=(ov<<17)+(extend<<16)+(bank<<12)+pc; pc=ma&0o7777; bank=ma>>12; break;
+	case JMP: yield* ea(); pc=ma&0o7777; bank=ma>>12; break;
+	case JSP: yield* ea(); ac=(ov<<17)+(extend<<16)+(bank<<12)+pc; pc=ma&0o7777; bank=ma>>12; break;
 	case SKP:
 		var cond =
 			(((y&0100)==0100)&&(ac==0)) ||
@@ -322,21 +325,21 @@ function dispatch(md) {
   }
 }
 
-function ea() {
-	elapsedTime += 5;
+function* ea() {
+	yield;
 	ma = y;
 	if(!extend) {
 		while(true){
 			ma = (bank<<12) + ma;
 			if (ib==0) return;
-			elapsedTime += 5;
+			yield;
 			ib=(memory[ma]>>12)&1;
 			ma=memory[ma]&07777;
 		}
 	} else {
 		ma = (bank<<12) + ma;
 		if (ib==0) return;
-		elapsedTime += 5;
+		yield;
 		ma=memory[ma]&0o177777;
 	}
 }
