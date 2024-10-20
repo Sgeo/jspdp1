@@ -32,11 +32,12 @@ class PaperTapeReader {
             let y = inst & 0o7777;
             if(instcode === 0o15 || instcode === 0o12) { // DIO or DAC. Supposed to only be DIO, but other emulators accept DAC, claiming that there are tapes that (wrongly) use it
                 let value = this.rpbi();
-                memory[y] = value;
+                memory[(bank<<12)|y] = value;
                 console.log(`Inserting ${oct(y)} = ${oct(value)}`);
             } else if(instcode === 0o30) { // JMP
                 pc = y;
                 console.log(`Jumping to ${oct(pc)}`);
+                window.running = 1;
                 break;
             } else {
                 console.error("Unrecognized instruction in RIM 0o", inst.toString(8), "at index ", this._index);
