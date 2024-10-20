@@ -20,6 +20,7 @@
   }
 </style>
 <script type="text/javascript" src="pdp1console.js"></script>
+<script type="text/javascript" src="pdp1audio.js"></script>
 <script type="text/javascript" src="spacewar.js"></script>
 <script type="text/javascript" src="spacewar.bin.js"></script>
 <script type="text/javascript" src="ptr.js"></script>
@@ -237,7 +238,8 @@
     </div>
   </div>
   <div class="console-column-container">
-    <label for="tape">Load tape...</label><input type="file" id="tape">
+    <label><button onclick="pdp1audio.enable()">Enable audio</button></label>
+    <label>Load tape...<input type="file" id="tape"></label>
     <button id="autotest">Test (insert digital-1-12-m-rim.bin first)</button>
     <script>
       document.querySelector("#autotest").addEventListener("click", async function() {

@@ -84,6 +84,7 @@ function sign(num) {
 
 function setup(){
 	pdp1console = new PDP1Console;
+	pdp1audio = new PDP1Audio;
 	canvas = document.getElementById('swcanvas');
 	canvas.width = 550;
 	canvas.height =550;
@@ -133,6 +134,7 @@ function frame(){
 	startingTime = elapsedTime;
 	pdp1console.display();
 	for(let i = 0; i < (56000/5); i++) {
+		pdp1audio.cycle();
 		stepgen.next();
 	}
 }
