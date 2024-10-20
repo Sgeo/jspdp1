@@ -151,7 +151,7 @@
     <div>
       EXTENSION and ADDRESS
     </div>
-    <div class="console-bits-container">
+    <div class="console-bits-container" data-console-test-input="testAddress">
       <input type="checkbox"  data-console="ta">
       |
       <input type="checkbox"  data-console="ta">
@@ -177,7 +177,7 @@
     <div>
       TEST WORD
     </div>
-    <div class="console-bits-container">
+    <div class="console-bits-container" data-console-test-input="testWord">
       <input type="checkbox"  data-console="tw">
       <input type="checkbox"  data-console="tw">
       <input type="checkbox"  data-console="tw">
@@ -203,11 +203,11 @@
       <input type="checkbox"  data-console="tw">
     </div>
     <div>
-      <button onclick="running = true;">START</button>
-      <button onclick="running = false;">STOP</button>
-      <button onclick="running = true;">CONTINUE</button>
-      <button>EXAMINE</button>
-      <button>DEPOSIT</button>
+      <button onclick="pdp1console.start();">START</button>
+      <button onclick="pdp1console.stop();">STOP</button>
+      <button onclick="pdp1console.continue();">CONTINUE</button>
+      <button onclick="pdp1console.examine();">EXAMINE</button>
+      <button onclick="pdp1console.deposit();">DEPOSIT</button>
       <button onclick="ptr.rim();">READ IN</button>
     </div>
   </div>
@@ -218,7 +218,7 @@
   </div>
   <div class="console-column-container">
     <div>SENSE SWITCHES</div>
-    <div class="console-bits-container">
+    <div class="console-bits-container" data-console-input="sense">
       <input type="checkbox" data-console="sense">
       <input type="checkbox" data-console="sense">
       <input type="checkbox" data-console="sense">
@@ -252,14 +252,14 @@
           });
         }
         running = false;
-        sense.fill(false);
+        _sense.fill(false);
         ptr.rim();
         running = true;
         await waitForHalt(); // Program 2's HLT test.
         // Skip rest of program 2
-        sense.fill(true);
-        sense[0] = false;
-        sense[1] = false;
+        _sense.fill(true);
+        _sense[0] = false;
+        _sense[1] = false;
         testWord = 0o777777;
         ptr.rim();
         running = true;
