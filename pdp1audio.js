@@ -23,13 +23,16 @@ class PDP1Audio {
         }
         this._records.push([flag(1), flag(2), flag(3), flag(4)]);
         if(this._records.length == this.CYCLES_PER_SAMPLE) {
-            let sum = 0;
+            let sum_l = 0;
+            let sum_r = 0;
             for(let r of this._records) {
-                sum += r[0] ? 1.0 / this.CYCLES_PER_SAMPLE : 0.0;
+                sum_l += r[0] ? 0.5 / this.CYCLES_PER_SAMPLE : 0.0;
+                sum_l += r[1] ? 0.5 / this.CYCLES_PER_SAMPLE : 0.0;
+                sum_r += r[2] ? 0.5 / this.CYCLES_PER_SAMPLE : 0.0;
+                sum_r += r[3] ? 0.5 / this.CYCLES_PER_SAMPLE : 0.0;
             }
-            for(let channel = 0; channel < 2; channel++) {
-                this._audioBuffer.getChannelData(channel)[this._sampleIndex] = sum;
-            }
+            this._audioBuffer.getChannelData(0)[this._sampleIndex] = sum_l;
+            this._audioBuffer.getChannelData(1)[this._sampleIndex] = sum_r;
             this._records = [];
             this._sampleIndex++;
             if(this._sampleIndex === this._audioBuffer.length) {
