@@ -10,14 +10,14 @@ div.frame {
  height: 550px;
 }
 
-div.spacewar {
+div.crt {
  position: absolute;
  width: 650px;
  height: 550px;
  overflow: hidden;
 }
 
-canvas.spacewar {
+canvas.crt {
  background: black;
  position: absolute;
  width: 550px;
