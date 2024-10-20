@@ -4,6 +4,21 @@
 <meta name="keywords" content="Spacewar, game, original, PDP-1, emulator, gerasimov, silverman, Graetz, Russell, Wiitanen">
 <meta http-equiv="X-UA-Compatible" content="IE=9" />
 <style type="text/css">@import "spacewar.css";</style>
+<style>
+  .console-container {
+    display: flex;
+    flex-direction: row;
+  }
+  .console-column-container {
+    display: flex;
+    flex-direction: column
+  }
+  .console-bits-container {
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-end;
+  }
+</style>
 <script type="text/javascript" src="pdp1console.js"></script>
 <script type="text/javascript" src="spacewar.js"></script>
 <script type="text/javascript" src="spacewar.bin.js"></script>
@@ -24,86 +39,243 @@
 <canvas class="spacewar" id="swcanvas"></canvas>
 </div>
 </div>
-<div>
-  <div>PROGRAM COUNTER: <span id="bankelem"></span> <span id="pcelem"></span></div>
-  <div>MEMORY ADDRESS: <span id="maelem"></span></div>
-  <div>ACCUMULATOR: <span id="acelem"></span></div>
-  <div>IN - OUT: <span id="ioelem"></span></div>
-  <div>RUN: <input type="checkbox" id="runelem" disabled></div>
-</div>
-<button onclick="running = true;" disabled>START (not working yet)</button>
-<button onclick="running = false;">STOP</button>
-<button onclick="running = true;">CONTINUE</button>
-<button onclick="ptr.rim();">READ IN</button>
-<label for="tape">Load tape...</label><input type="file" id="tape">
-<button id="autotest">Test (insert digital-1-12-m-rim.bin first)</button>
-<script>
-  document.querySelector("#autotest").addEventListener("click", async function() {
-    function waitForHalt() {
-      return new Promise((resolve, reject) => {
-        let timer = setInterval(function() {
-          if(!running) {
-            clearInterval(timer);
-            resolve();
-          }
-        }, 30);
+<div id="console" class="console-container">
+  <div class="console-column-container">
+    <div>EXTENSION and PROGRAM COUNTER</div>
+    <div class="console-bits-container">
+      <input type="checkbox" disabled data-console="bank">
+      |
+      <input type="checkbox" disabled data-console="bank">
+      <input type="checkbox" disabled data-console="bank">
+      <input type="checkbox" disabled data-console="bank">
+      |
+      <input type="checkbox" disabled data-console="pc">
+      <input type="checkbox" disabled data-console="pc">
+      <input type="checkbox" disabled data-console="pc">
+      |
+      <input type="checkbox" disabled data-console="pc">
+      <input type="checkbox" disabled data-console="pc">
+      <input type="checkbox" disabled data-console="pc">
+      |
+      <input type="checkbox" disabled data-console="pc">
+      <input type="checkbox" disabled data-console="pc">
+      <input type="checkbox" disabled data-console="pc">
+      |
+      <input type="checkbox" disabled data-console="pc">
+      <input type="checkbox" disabled data-console="pc">
+      <input type="checkbox" disabled data-console="pc">
+    </div>
+    <div>EXTENSION and MEMORY ADDRESS</div>
+    <div class="console-bits-container">
+      <input type="checkbox" disabled data-console="ma">
+      |
+      <input type="checkbox" disabled data-console="ma">
+      <input type="checkbox" disabled data-console="ma">
+      <input type="checkbox" disabled data-console="ma">
+      |
+      <input type="checkbox" disabled data-console="ma">
+      <input type="checkbox" disabled data-console="ma">
+      <input type="checkbox" disabled data-console="ma">
+      |
+      <input type="checkbox" disabled data-console="ma">
+      <input type="checkbox" disabled data-console="ma">
+      <input type="checkbox" disabled data-console="ma">
+      |
+      <input type="checkbox" disabled data-console="ma">
+      <input type="checkbox" disabled data-console="ma">
+      <input type="checkbox" disabled data-console="ma">
+      |
+      <input type="checkbox" disabled data-console="ma">
+      <input type="checkbox" disabled data-console="ma">
+      <input type="checkbox" disabled data-console="ma">
+    </div>
+    <div>
+      MEMORY BUFFER (not implemented)
+    </div>
+    <div>
+      ACCUMULATOR
+    </div>
+    <div class="console-bits-container">
+      <input type="checkbox" disabled data-console="ac">
+      <input type="checkbox" disabled data-console="ac">
+      <input type="checkbox" disabled data-console="ac">
+      |
+      <input type="checkbox" disabled data-console="ac">
+      <input type="checkbox" disabled data-console="ac">
+      <input type="checkbox" disabled data-console="ac">
+      |
+      <input type="checkbox" disabled data-console="ac">
+      <input type="checkbox" disabled data-console="ac">
+      <input type="checkbox" disabled data-console="ac">
+      |
+      <input type="checkbox" disabled data-console="ac">
+      <input type="checkbox" disabled data-console="ac">
+      <input type="checkbox" disabled data-console="ac">
+      |
+      <input type="checkbox" disabled data-console="ac">
+      <input type="checkbox" disabled data-console="ac">
+      <input type="checkbox" disabled data-console="ac">
+      |
+      <input type="checkbox" disabled data-console="ac">
+      <input type="checkbox" disabled data-console="ac">
+      <input type="checkbox" disabled data-console="ac">
+    </div>
+    <div>
+      IN - OUT
+    </div>
+    <div class="console-bits-container">
+      <input type="checkbox" disabled data-console="io">
+      <input type="checkbox" disabled data-console="io">
+      <input type="checkbox" disabled data-console="io">
+      |
+      <input type="checkbox" disabled data-console="io">
+      <input type="checkbox" disabled data-console="io">
+      <input type="checkbox" disabled data-console="io">
+      |
+      <input type="checkbox" disabled data-console="io">
+      <input type="checkbox" disabled data-console="io">
+      <input type="checkbox" disabled data-console="io">
+      |
+      <input type="checkbox" disabled data-console="io">
+      <input type="checkbox" disabled data-console="io">
+      <input type="checkbox" disabled data-console="io">
+      |
+      <input type="checkbox" disabled data-console="io">
+      <input type="checkbox" disabled data-console="io">
+      <input type="checkbox" disabled data-console="io">
+      |
+      <input type="checkbox" disabled data-console="io">
+      <input type="checkbox" disabled data-console="io">
+      <input type="checkbox" disabled data-console="io">
+    </div>
+    <div>
+      EXTENSION and ADDRESS
+    </div>
+    <div class="console-bits-container" data-console-test-input="testAddress">
+      <input type="checkbox"  data-console="ta">
+      |
+      <input type="checkbox"  data-console="ta">
+      <input type="checkbox"  data-console="ta">
+      <input type="checkbox"  data-console="ta">
+      |
+      <input type="checkbox"  data-console="ta">
+      <input type="checkbox"  data-console="ta">
+      <input type="checkbox"  data-console="ta">
+      |
+      <input type="checkbox"  data-console="ta">
+      <input type="checkbox"  data-console="ta">
+      <input type="checkbox"  data-console="ta">
+      |
+      <input type="checkbox"  data-console="ta">
+      <input type="checkbox"  data-console="ta">
+      <input type="checkbox"  data-console="ta">
+      |
+      <input type="checkbox"  data-console="ta">
+      <input type="checkbox"  data-console="ta">
+      <input type="checkbox"  data-console="ta">
+    </div>
+    <div>
+      TEST WORD
+    </div>
+    <div class="console-bits-container" data-console-test-input="testWord">
+      <input type="checkbox"  data-console="tw">
+      <input type="checkbox"  data-console="tw">
+      <input type="checkbox"  data-console="tw">
+      |
+      <input type="checkbox"  data-console="tw">
+      <input type="checkbox"  data-console="tw">
+      <input type="checkbox"  data-console="tw">
+      |
+      <input type="checkbox"  data-console="tw">
+      <input type="checkbox"  data-console="tw">
+      <input type="checkbox"  data-console="tw">
+      |
+      <input type="checkbox"  data-console="tw">
+      <input type="checkbox"  data-console="tw">
+      <input type="checkbox"  data-console="tw">
+      |
+      <input type="checkbox"  data-console="tw">
+      <input type="checkbox"  data-console="tw">
+      <input type="checkbox"  data-console="tw">
+      |
+      <input type="checkbox"  data-console="tw">
+      <input type="checkbox"  data-console="tw">
+      <input type="checkbox"  data-console="tw">
+    </div>
+    <div>
+      <button onclick="pdp1console.start();">START</button>
+      <button onclick="pdp1console.stop();">STOP</button>
+      <button onclick="pdp1console.continue();">CONTINUE</button>
+      <button onclick="pdp1console.examine();">EXAMINE</button>
+      <button onclick="pdp1console.deposit();">DEPOSIT</button>
+      <button onclick="ptr.rim();">READ IN</button>
+    </div>
+  </div>
+  <div class="console-column-container">
+    <label><input type="checkbox" disabled data-console="running">RUN</label>
+    <label><input type="checkbox" disabled data-console="ov">OVER FLOW</label>
+    <label><input type="checkbox" disabled data-console="extend">EXTEND</label>
+  </div>
+  <div class="console-column-container">
+    <div>SENSE SWITCHES</div>
+    <div class="console-bits-container" data-console-input="sense">
+      <input type="checkbox" data-console="sense">
+      <input type="checkbox" data-console="sense">
+      <input type="checkbox" data-console="sense">
+      <input type="checkbox" data-console="sense">
+      <input type="checkbox" data-console="sense">
+      <input type="checkbox" data-console="sense">
+    </div>
+    <div>PROGRAM FLAGS</div>
+    <div class="console-bits-container">
+      <input type="checkbox" disabled data-console="pf">
+      <input type="checkbox" disabled data-console="pf">
+      <input type="checkbox" disabled data-console="pf">
+      <input type="checkbox" disabled data-console="pf">
+      <input type="checkbox" disabled data-console="pf">
+      <input type="checkbox" disabled data-console="pf">
+    </div>
+  </div>
+  <div class="console-column-container">
+    <label for="tape">Load tape...</label><input type="file" id="tape">
+    <button id="autotest">Test (insert digital-1-12-m-rim.bin first)</button>
+    <script>
+      document.querySelector("#autotest").addEventListener("click", async function() {
+        function waitForHalt() {
+          return new Promise((resolve, reject) => {
+            let timer = setInterval(function() {
+              if(!running) {
+                clearInterval(timer);
+                resolve();
+              }
+            }, 30);
+          });
+        }
+        running = false;
+        _sense.fill(false);
+        ptr.rim();
+        running = true;
+        await waitForHalt(); // Program 2's HLT test.
+        // Skip rest of program 2
+        _sense.fill(true);
+        _sense[0] = false;
+        _sense[1] = false;
+        testWord = 0o777777;
+        ptr.rim();
+        running = true;
+        await waitForHalt();
+        alert(`Program: ${oct(memory[0])}\nMA: ${oct(ma)}`);
       });
-    }
-    running = false;
-    sense.fill(false);
-    ptr.rim();
-    running = true;
-    await waitForHalt(); // Program 2's HLT test.
-    // Skip rest of program 2
-    sense.fill(true);
-    sense[0] = false;
-    sense[1] = false;
-    testWord = 0o777777;
-    ptr.rim();
-    running = true;
-    await waitForHalt();
-    alert(`Program: ${oct(memory[0])}\nMA: ${oct(ma)}`);
-  });
-</script>
-<form id="testword_checkboxes">
-  <label>Test word</label>
-    <input type="checkbox">
-    <input type="checkbox">
-    <input type="checkbox">
-    <input type="checkbox">
-    <input type="checkbox">
-    <input type="checkbox">
-    <input type="checkbox">
-    <input type="checkbox">
-    <input type="checkbox">
-    <input type="checkbox">
-    <input type="checkbox">
-    <input type="checkbox">
-    <input type="checkbox">
-    <input type="checkbox">
-    <input type="checkbox">
-    <input type="checkbox">
-    <input type="checkbox">
-    <input type="checkbox">
-</form>
-<script>
-  document.querySelector("#testword_checkboxes").addEventListener("change", function(event) {
-    console.log(this.elements);
-    testWord = 0;
-    for(let i = 0; i < this.elements.length; i++) {
-      let bit = this.elements[i].checked ? 1 : 0;
-      testWord = testWord | (bit << i);
-    }
-    console.log("Test word (in octal)", testWord.toString(8));
-  });
-</script>
-<script>
-  document.querySelector("#tape").addEventListener("change", async function(event) {
-    if(event.target.files.length > 0) {
-      let buffer = await event.target.files[0].arrayBuffer();
-      ptr.load(new Uint8Array(buffer));
-    }
-  });
-</script>
+    </script>
+    <script>
+      document.querySelector("#tape").addEventListener("change", async function(event) {
+        if(event.target.files.length > 0) {
+          let buffer = await event.target.files[0].arrayBuffer();
+          ptr.load(new Uint8Array(buffer));
+        }
+      });
+    </script>
+  </div>
+</div>
 </body>
 </html>

@@ -5,13 +5,48 @@ function oct(num) {
 var ac=0, io=0, pc=4, y, ib, ov=0, bank=0, ma=0, mb=0;
 // pc contains 12-bit address even in extended mode, 4 bit bank is in bank only.
 // instructions retrieving from pc or modifying pc or exposing pc need to take this into account.
-var flag = [false, false, false, false, false, false];
-var sense = [false, false, false, false, false, false];
+var _flag = [false, false, false, false, false, false];
+var _sense = [false, false, false, false, false, false];
+function flag(flagnum, value) {
+	if(typeof value === 'undefined') {
+		if(flagnum === 7) {
+			// Flag 7 is effectively on if any flag is on
+			return _flag.some(f => f);
+		} else {
+			return _flag[flagnum - 1];
+		}
+	} else {
+		value = !!value;
+		if(flagnum === 7) {
+			_flag.fill(value);
+		} else {
+			_flag[flagnum - 1] = value;
+		}
+	}
+}
+function sense(sensenum, value) {
+	if(typeof value === 'undefined') {
+		if(sensenum === 7) {
+			// Flag 7 is effectively on if any flag is on
+			return _sense.some(f => f);
+		} else {
+			return _sense[sensenum - 1];
+		}
+	} else {
+		value = !!value;
+		if(sensenum === 7) {
+			_sense.fill(value);
+		} else {
+			_sense[sensenum - 1] = value;
+		}
+	}
+}
 var extend = 0;
 var control=0;
 var elapsedTime = 0;
-var running = true;
+var running = 1;
 var testWord = 0o000000;
+var testAddress = 0;
 var cpuhistory = false;
 var pdp1console;
 
@@ -92,6 +127,7 @@ function frame(){
 	ctx.fillRect(0, 0, 550, 550);
 	ctx.fillStyle = '#ffffff';
 	startingTime = elapsedTime;
+	pdp1console.display();
 	while(elapsedTime - startingTime < 56000) {
 		if(!running) {
 			break;
@@ -107,7 +143,6 @@ function step(){
 		pc = pc&0o7777;
 		dispatch(memory[ma])
 	}
-	pdp1console.display();
 }
 
 function dispatch(md) {
@@ -205,10 +240,8 @@ function dispatch(md) {
 			(((y&0400)==0400)&&(ac>>17==1)) ||
 			(((y&01000)==01000)&&(ov==0)) ||
 			(((y&02000)==02000)&&(io>>17==0))||
-			(((y&7)!=0)&&((y&7)!=7)&&!flag[(y&7) - 1])||
-			((y&7)==7)&&flag.every(b => !b)||
-			(((y&070)!=0)&&((y&070)!=070)&&!sense[((y&070)>>3)-1])||
-			((y&070)==070)&&sense.every(b => !b);
+			(((y&7)!=0)&&!flag(y&7))||
+			(((y&070)!=0)&&!sense((y&070)>>3))
 		if (ib==0) {if (cond) pc++;}
 		else {if (!cond) pc++;}
 		if ((y&01000)==01000) ov=0;
@@ -271,22 +304,18 @@ function dispatch(md) {
 		if ((y&0o7777)==0o4074) {extend = 1; break;} // eem
 		if ((y&0o7777)==0o0074) {extend = 0; break;} // lem
 		console.error("Unknown IOT", `0o${md.toString(8)}`);
-		running = false;
+		running = 0;
 		break;
 	case OPR:	
 		if((y&0200)==0200) ac=0;
 		if((y&04000)==04000) io=0;
 		if((y&01000)==01000) ac^=0777777;
 		if((y&02000)==02000) ac|=testWord;
-		if((y&0400)==0400) {running=false; console.log("HALT");}
+		if((y&0400)==0400) {running=0; console.log("HALT");}
 		var nflag=y&7; 
 		if (nflag<1) break;
 		var state=(y&010)==010;
-		if (nflag==7) {
-			for (var i=0;i<6;i++) flag[i]=state;
-			break;
-		}
-		flag[nflag-1]=state;
+		flag(nflag, state);
 		break;
 	default:	console.log('Undefined instruction:', os(md), 'at', os(pc-1), 'opcode', (md>>13).toString(8)); running = false;
     //Runtime.getRuntime().exit(0);
