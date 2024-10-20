@@ -8,6 +8,11 @@ class PDP1Audio {
         this._sampleIndex = 0;
         
         this._audioBuffer = this._audioContext.createBuffer(2, this._audioContext.sampleRate, this._audioContext.sampleRate);
+        this._audioBufferSource = this._audioContext.createBufferSource();
+        this._audioBufferSource.loop = true;
+        this._audioBufferSource.buffer = this._audioBuffer;
+        this._audioBufferSource.connect(this._audioContext.destination);
+        this._audioBufferSource.start();
 
         this.CYCLES_PER_SAMPLE = Math.round((1/0.000005) / this._audioContext.sampleRate);
     }
@@ -28,10 +33,6 @@ class PDP1Audio {
             this._records = [];
             this._sampleIndex++;
             if(this._sampleIndex === this._audioBuffer.length) {
-                let audioBufferSource = this._audioContext.createBufferSource();
-                audioBufferSource.buffer = this._audioBuffer;
-                audioBufferSource.connect(this._audioContext.destination);
-                audioBufferSource.start();
                 this._sampleIndex = 0;
             }
         }
