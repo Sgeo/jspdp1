@@ -8,46 +8,26 @@ class PDP1Audio {
         this._records = [];
         this._startTime = window.elapsedTime;
         
-        this._audioBuffer = this._audioContext.createBuffer(2, 0.1 * this._audioContext.sampleRate, this._audioContext.sampleRate);
-        this._audioBufferSource = this._audioContext.createBufferSource();
-        this._audioBufferSource.loop = true;
-        this._audioBufferSource.buffer = this._audioBuffer;
-        this._audioBufferSource.connect(this._audioContext.destination);
-        this._audioBufferSource.start();
+        let scriptProcessorNode = this._audioContext.createScriptProcessor(0, 0, 2);
+        scriptProcessorNode.onaudioprocess = this.buffer.bind(this);
+        scriptProcessorNode.connect(this._audioContext.destination);
 
         this.CYCLES_PER_SAMPLE = Math.round((1/0.000005) / this._audioContext.sampleRate);
 
         clearInterval(timer); // Abduct main loop
 
-        let audioBufferSource = this.buffer(); // First CPU loop
-        audioBufferSource.start();
-
-        let audioBufferEnded = () => {
-            audioBufferSource = this.buffer();
-            audioBufferSource.onended = audioBufferEnded;
-            audioBufferSource.start();
-        }
-
-        audioBufferSource.onended = audioBufferEnded;
         
     }
 
-    buffer() {
-        let startTime = performance.now();
-        let audioBuffer = this._audioContext.createBuffer(2, this._audioContext.sampleRate, this._audioContext.sampleRate);
-        let audioBufferSource = this._audioContext.createBufferSource();
-        audioBufferSource.buffer = audioBuffer;
-    
-        audioBufferSource.connect(this._audioContext.destination);
+    buffer(audioProcessingEvent) {
+
+        let audioBuffer = audioProcessingEvent.outputBuffer;
 
         for(let i = 0; i < audioBuffer.length; i++) {
             let [sum_l, sum_r] = this.sample();
             audioBuffer.getChannelData(0)[i] = sum_l;
             audioBuffer.getChannelData(1)[i] = sum_r;
         }
-        let endTime = performance.now();
-        console.log("Timimg of buffer creation: ", endTime - startTime);
-        return audioBufferSource;
         
     }
 
