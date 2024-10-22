@@ -94,6 +94,7 @@ function setup(){
 	window.onkeydown = function(e){handleKeydown (e);}
 	window.onkeyup = function(e){handleKeyup(e);}
 	timer = setInterval(frame, 56); 
+	requestAnimationFrame(onAnimationFrame);
 }
 
 function handleKeydown(e){
@@ -122,19 +123,20 @@ function handleKeyup(e){
 	if (c=='L') control &= ~0400000;
 }
 
+function onAnimationFrame() {
+	ctx.fillStyle = "rgb(0 0 0 / 5%)";
+	ctx.fillRect(0, 0, 550, 550);
+	ctx.fillStyle = '#ffffff';
+	pdp1console.display();
+	requestAnimationFrame(onAnimationFrame);
+}
+
 let stepgen;
 function frame(){
 	if(!stepgen) {
 		stepgen = step();
 	}
-	//ctx.clearRect(0,0,550,550);
-	ctx.fillStyle = "rgb(0 0 0 / 5%)";
-	ctx.fillRect(0, 0, 550, 550);
-	ctx.fillStyle = '#ffffff';
-	startingTime = elapsedTime;
-	pdp1console.display();
 	for(let i = 0; i < (56000/5); i++) {
-		pdp1audio.cycle();
 		stepgen.next();
 	}
 }

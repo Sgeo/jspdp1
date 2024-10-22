@@ -51,7 +51,6 @@ class PDP1Audio {
         if(!stepgen) {
             stepgen = step();
         }
-        //pdp1console.display();
         stepgen.next();
         return [flag(1), flag(2), flag(3), flag(4)];
     }
