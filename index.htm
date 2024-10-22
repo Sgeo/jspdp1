@@ -238,9 +238,44 @@
     </div>
   </div>
   <div class="console-column-container">
+    <div id="tape-status"></div>
+    <script>
+      function tapeStatus(str) {
+        document.querySelector("#tape-status").innerText = str;
+      }
+    </script>
     <label><button onclick="pdp1audio.enable()" id="enableaudio">Enable audio</button></label>
+    <details>
+      <summary>Music players</summary>
+      <button data-tape="pdp1m13.rim">pdp1m13.rim</button>
+    </details>
+    <details>
+      <summary>Music (intermediate)</summary>
+      <button data-tape="trioSonataI_intermediate.bin">trioSonataI_intermediate.bin</button>
+      <button data-tape="trioSonataIII_intermediate.bin">trioSonataIII_intermediate.bin</button>
+      <button data-tape="trioSonataIV_intermediate.bin">trioSonataIV_intermediate.bin</button>
+    </details>
+    <details>
+      <summary>Utilities</summary>
+      <button data-tape="digital-1-12-m-rim.bin">digital-1-12-m-rim.bin</button>
+      <button id="autotest">Test (insert digital-1-12-m-rim.bin first)</button>
+    </details>
+    <script>
+      for(let tapeButton of document.querySelectorAll("button[data-tape]")) {
+        tapeButton.addEventListener("click", async function() {
+          tapeStatus("Loading tape...");
+          try {
+            let arrayBuffer = await fetch(`tapes/${this.dataset.tape}`).then(r => r.arrayBuffer());
+            ptr.load(new Uint8Array(arrayBuffer));
+            tapeStatus("Tape loaded!");
+          } catch(e) {
+            console.error(e);
+            tapeStatus(`Error loading tape: ${e}`);
+          }
+        });
+      }
+    </script>
     <label>Load tape...<input type="file" id="tape"></label>
-    <button id="autotest">Test (insert digital-1-12-m-rim.bin first)</button>
     <script>
       document.querySelector("#autotest").addEventListener("click", async function() {
         function waitForHalt() {
