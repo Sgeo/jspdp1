@@ -143,12 +143,14 @@ function frame(){
 
 function* step(){
 	while(true) {
-		yield;
 		if(running) {
 			ma = (bank<<12)|(pc&0o7777);
 			pc++;
 			pc = pc&0o7777;
-			yield* dispatch(memory[ma]);
+			yield* emb();
+			yield* dispatch(mb);
+		} else {
+			yield;
 		}
 	}
 }
@@ -160,28 +162,28 @@ function* dispatch(md) {
 	}
 	y=md&07777; ib=(md>>12)&1;
 	switch(md>>13) {
-	case AND: yield* ea(); ac&=memory[ma]; break;
-	case IOR: yield* ea(); ac|=memory[ma]; break;
-	case XOR: yield* ea(); ac^=memory[ma]; break;
-	case XCT: yield* ea(); yield* dispatch(memory[ma]); break;
+	case AND: yield* ea(); yield* emb(); ac&=mb; break;
+	case IOR: yield* ea(); yield* emb(); ac|=mb; break;
+	case XOR: yield* ea(); yield* emb(); ac^=mb; break;
+	case XCT: yield* ea(); yield* emb(); yield* dispatch(mb); break;
 	case CALJDA: 
 		var target=(ib==0)?64:y;
 		memory[(bank<<12)+target]=ac;
 		ac=(ov<<17)+(extend<<16)+(bank<<12)+pc; // TODO: Don't know if the bank bits are hidden in non-extend mode
 		pc=target+1;
 		break;
-	case LAC: yield* ea(); ac=memory[ma]; break;
-	case LIO: yield* ea(); io=memory[ma]; break;
-	case DAC: yield* ea(); memory[ma]=ac; break;
-	case DAP: yield* ea(); memory[ma]=(memory[ma]&0770000)+(ac&07777); break;
-	case DIP: yield* ea(); memory[ma]=(ac&0o770000)|(memory[ma]&0o007777); break;
-	case DIO: yield* ea(); memory[ma]=io; break;
-	case DZM: yield* ea(); memory[ma]=0; break;
+	case LAC: yield* ea(); yield* emb(); ac=mb; break;
+	case LIO: yield* ea(); yield* emb(); io=mb; break;
+	case DAC: yield* ea(); yield* emb(); memory[ma]=ac; break;
+	case DAP: yield* ea(); yield* emb(); memory[ma]=(mb&0770000)+(ac&07777); break;
+	case DIP: yield* ea(); yield* emb(); memory[ma]=(ac&0o770000)|(mb&0o007777); break;
+	case DIO: yield* ea(); yield* emb(); memory[ma]=io; break;
+	case DZM: yield* ea(); yield* emb(); memory[ma]=0; break;
 	case ADD:
-		yield* ea();
+		yield* ea(); yield* emb();
 		let oldsign = sign(ac);
-		ac=ac+memory[ma];
-		let memsign = sign(memory[ma]);
+		ac=ac+mb;
+		let memsign = sign(mb);
 		ac=eac(ac);
 		let newsign = sign(ac);
 		ac=fixMinusZero(ac);
@@ -190,34 +192,34 @@ function* dispatch(md) {
 		}
 		break;
 	case SUB:
-		yield* ea();
-		var diffsigns=((ac>>17)^(memory[ma]>>17))==1;
-		ac=ac+(memory[ma]^0777777);
+		yield* ea(); yield* emb();
+		var diffsigns=((ac>>17)^(mb>>17))==1;
+		ac=ac+(mb^0777777);
 		ac=(ac+(ac>>18))&0777777;
 		if (ac==0777777) ac=0; // TODO: Sus
-		if (diffsigns&&(memory[ma]>>17==ac>>17)) ov=1;
+		if (diffsigns&&(mb>>17==ac>>17)) ov=1;
 		break;
 	case IDX:
-		yield* ea();
-		ac=memory[ma]+1;
+		yield* ea(); yield* emb();
+		ac=mb+1;
 		ac=eac(ac);
 		ac=fixMinusZero(ac);
 		memory[ma]=ac;
 		break;
 	case ISP:
-		yield* ea();
-		ac=memory[ma]+1; 
+		yield* ea(); yield* emb();
+		ac=mb+1; 
 		ac=eac(ac);
 		ac=fixMinusZero(ac);
 		memory[ma]=ac;
 		if((ac&0400000)==0) pc++;
 		break;
-	case SAD: yield* ea(); if(ac!=memory[ma]) pc++; break;
-	case SAS: yield* ea(); if(ac==memory[ma]) pc++; break;
+	case SAD: yield* ea(); yield* emb(); if(ac!=mb) pc++; break;
+	case SAS: yield* ea(); yield* emb(); if(ac==mb) pc++; break;
 	case MUS:
-		yield* ea();
+		yield* ea(); yield* emb();
 		if ((io&1)==1){
-			ac=ac+memory[ma];
+			ac=ac+mb;
 			ac=(ac+(ac>>18))&0777777;
 			if (ac==0777777) ac=0;
 		}
@@ -225,15 +227,15 @@ function* dispatch(md) {
 		ac>>=1;
 		break;
 	case DIS:
-		yield* ea();
+		yield* ea(); yield* emb();
 		var acl=ac>>17;
 		ac=(ac<<1|io>>17)&0777777;
 		io=((io<<1|acl)&0777777)^1;
 		if ((io&1)==1){
-			ac=ac+(memory[ma]^0777777);
+			ac=ac+(mb^0777777);
 			ac=(ac+(ac>>18))&0777777;}
 		else {
-			ac=ac+1+memory[ma];
+			ac=ac+1+mb;
 			ac=(ac+(ac>>18))&0777777;
 		}
 		if (ac==0o1000000) ac=0;
@@ -330,22 +332,26 @@ function* dispatch(md) {
 }
 
 function* ea() {
-	yield;
 	ma = y;
 	if(!extend) {
 		while(true){
 			ma = (bank<<12) + ma;
 			if (ib==0) return;
-			yield;
-			ib=(memory[ma]>>12)&1;
-			ma=memory[ma]&07777;
+			yield* emb();
+			ib=(mb>>12)&1;
+			ma=mb&07777;
 		}
 	} else {
 		ma = (bank<<12) + ma;
 		if (ib==0) return;
-		yield;
-		ma=memory[ma]&0o177777;
+		yield* emb();
+		ma=mb&0o177777;
 	}
+}
+
+function* emb() {
+	yield;
+	mb=memory[ma];
 }
 
 function dpy(){
