@@ -86,11 +86,11 @@ function setup(){
 	pdp1console = new PDP1Console;
 	pdp1audio = new PDP1Audio;
 	canvas = document.getElementById('swcanvas');
-	canvas.width = 550;
-	canvas.height =550;
+	canvas.width = 512;
+	canvas.height =512;
 	ctx = canvas.getContext('2d');
 	ctx.fillStyle = '#ffffff';
-	ctx.clearRect(0,0,550,550);
+	ctx.clearRect(0,0,512,512);
 	window.onkeydown = function(e){handleKeydown (e);}
 	window.onkeyup = function(e){handleKeyup(e);}
 	timer = setInterval(frame, 56); 
@@ -125,7 +125,7 @@ function handleKeyup(e){
 
 function onAnimationFrame() {
 	ctx.fillStyle = "rgb(0 0 0 / 5%)";
-	ctx.fillRect(0, 0, 550, 550);
+	ctx.fillRect(0, 0, 512, 512);
 	ctx.fillStyle = '#ffffff';
 	pdp1console.display();
 	requestAnimationFrame(onAnimationFrame);
@@ -354,12 +354,30 @@ function* emb() {
 	mb=memory[ma];
 }
 
+function num_from_ones(width) {
+	// num_from_ones(width)(ones) converts 1's complement with a width to JS number
+	// Curried as a probably premature optimization
+	let mask = (2**width) - 1;
+	return function(ones) {
+		let sign = ones >> (width - 1);
+		if(sign) {
+			return -(ones ^ mask);
+		} else {
+			return ones;
+		}
+	}
+}
+
+num_from_ones_dpy = num_from_ones(10);
+
 function dpy(){
-	var x=(ac+0400000)&0777777;
-	var y=(io+0400000)&0777777;
-	x=x*550/0777777; y=y*550/0777777;
-	y=550-y;
-	ctx.fillRect(x,y,1,1);
+	let x = ac>>8; // Top 10 bits out of 18
+	let y = io>>8;
+	x = num_from_ones_dpy(x);
+	y = num_from_ones_dpy(y);
+	x = x + 512;
+	y = 512 - y;
+	ctx.fillRect(x/2,y/2,1,1);
 }
 
 

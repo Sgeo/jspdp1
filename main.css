@@ -20,8 +20,8 @@ div.crt {
 canvas.crt {
  background: black;
  position: absolute;
- width: 550px;
- height: 550px;
+ width: 512;
+ height: 512;
  top: 0px;
  left: 100px;
 }
