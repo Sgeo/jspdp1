@@ -370,6 +370,14 @@ function num_from_ones(width) {
 
 num_from_ones_dpy = num_from_ones(10);
 
+const JITTER = 1;
+
+function display_jitter(coord) {
+	// https://bitsavers.org/pdf/mit/rle_pdp1/memos/pdp35-2_sep71.pdf states accuracy is 3% of raster size
+	// Easier to just jitter by a small amount
+	return coord + (Math.random() * JITTER * 2 - JITTER);
+}
+
 function dpy(){
 	let x = ac>>8; // Top 10 bits out of 18
 	let y = io>>8;
@@ -377,6 +385,8 @@ function dpy(){
 	y = num_from_ones_dpy(y);
 	x = x + 512;
 	y = 512 - y;
+	x = display_jitter(x);
+	y = display_jitter(y);
 	ctx.fillRect(x/2,y/2,1,1);
 }
 
