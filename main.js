@@ -44,7 +44,7 @@ function sense(sensenum, value) {
 var extend = 0;
 var control=0;
 var elapsedTime = 0;
-var running = 1;
+var running = 0;
 var testWord = 0o000000;
 var testAddress = 0;
 var cpuhistory = false;
@@ -85,6 +85,7 @@ function sign(num) {
 function setup(){
 	pdp1console = new PDP1Console;
 	pdp1audio = new PDP1Audio;
+	pdp1term = new PDP1Term;
 	canvas = document.getElementById('swcanvas');
 	canvas.width = 512;
 	canvas.height =512;
@@ -93,6 +94,8 @@ function setup(){
 	ctx.clearRect(0,0,512,512);
 	window.onkeydown = function(e){handleKeydown (e);}
 	window.onkeyup = function(e){handleKeyup(e);}
+	pdp1term.createScreen("any", 24, 80);
+	document.getElementById("termframe").append(pdp1term.getCanvas());
 	timer = setInterval(frame, 56); 
 	requestAnimationFrame(onAnimationFrame);
 }

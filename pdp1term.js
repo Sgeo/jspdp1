@@ -2,25 +2,25 @@
 **
 **  Copyright (c) 2017, Kevin Jordan
 **
-**  aterm.js
-**    This class implements an ANSI X.364 (e.g., DEC VT-100) terminal emulator.
+**  pdp1term.js
+**    This class implements a Soroban typewriter with Flodec encoding
 **
 **--------------------------------------------------------------------------
 */
 
-class ATerm {
+class PDP1Term {
 
   constructor() {
 
     this.autowrapMode  = false;
-    this.bgndColor     = "black";
+    this.bgndColor     = "white";
     this.canvas        = null;
     this.col           = 0;
     this.cols          = 80;
     this.context       = null;
     this.cursorKeyMode = false;
     this.escSeq        = null;
-    this.fgndColor     = "lightgreen";
+    this.fgndColor     = "black";
     this.fontHeight    = 16;
     this.fontWidth     = 10;
     this.inverse       = false;
@@ -1024,8 +1024,3 @@ class ATerm {
     this.context.fillRect(0, y, w, this.fontHeight);
   }
 }
-//
-// The following lines enable this file to be used as a Node.js module.
-//
-if (typeof module === "undefined") module = {};
-module.exports = ATerm;
