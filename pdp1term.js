@@ -87,10 +87,72 @@ class PDP1Term {
       0xf058, 0xf059, 0xf05a, 0xf07b, 0xf081, 0xf07d, 0xf024, 0x7f    // x - <DEL>
     ];
 
-    this.normalSet     = this.ASCIIset;
-    this.charset       = this.normalSet;
-    this.G0            = this.normalSet;
-    this.G1            = this.normalSet;
+    this.conciseLower = [];
+    this.conciseLower[0o00] = " ";
+    this.conciseLower[0o01] = "1";
+    this.conciseLower[0o02] = "2";
+    this.conciseLower[0o03] = "3";
+    this.conciseLower[0o04] = "4";
+    this.conciseLower[0o05] = "5";
+    this.conciseLower[0o06] = "6";
+    this.conciseLower[0o07] = "7";
+    this.conciseLower[0o10] = "8";
+    this.conciseLower[0o11] = "9";
+    this.conciseLower[0o20] = "0";
+    this.conciseLower[0o21] = "/";
+    this.conciseLower[0o22] = "s";
+    this.conciseLower[0o23] = "t";
+    this.conciseLower[0o24] = "u";
+    this.conciseLower[0o25] = "v";
+    this.conciseLower[0o26] = "w";
+    this.conciseLower[0o27] = "x";
+    this.conciseLower[0o30] = "y";
+    this.conciseLower[0o31] = "z";
+    this.conciseLower[0o34] = () => {this.fgndColor = "black";};
+    this.conciseLower[0o35] = () => {this.fgndColor = "red";};
+    this.conciseLower[0o36] = "\t";
+    this.conciseLower[0o40] = "\u{B7}\b"; // · non-spacing
+    this.conciseLower[0o41] = "j";
+    this.conciseLower[0o42] = "k";
+    this.conciseLower[0o43] = "l";
+    this.conciseLower[0o44] = "m";
+    this.conciseLower[0o45] = "n";
+    this.conciseLower[0o46] = "o";
+    this.conciseLower[0o47] = "p";
+    this.conciseLower[0o50] = "q";
+    this.conciseLower[0o51] = "r";
+    this.conciseLower[0o54] = "-";
+    this.conciseLower[0o55] = ")";
+    this.conciseLower[0o56] = "\u{203E}\b"; // ‾ non-spacing
+    this.conciseLower[0o57] = "(";
+    this.conciseLower[0o61] = "a";
+    this.conciseLower[0o62] = "b";
+    this.conciseLower[0o63] = "c";
+    this.conciseLower[0o64] = "d";
+    this.conciseLower[0o65] = "e";
+    this.conciseLower[0o66] = "f";
+    this.conciseLower[0o67] = "g";
+    this.conciseLower[0o70] = "h";
+    this.conciseLower[0o71] = "i";
+    this.conciseLower[0o72] = () => {this.charset = this.conciseLower;};
+    this.conciseLower[0o74] = () => {this.charset = this.conciseUpper;};
+    this.conciseLower[0o75] = "\b";
+    this.conciseLower[0o77] = "\n";
+
+    this.conciseUpper = [];
+    this.conciseUpper[0o00] = " ";
+    this.conciseUpper[0o01] = "\"";
+    this.conciseUpper[0o02] = "'";
+    this.conciseUpper[0o03] = "~";
+    this.conciseUpper[0o04] = "\u{2283}"; // ⊃, supposed to be implies(?)
+    this.conciseUpper[0o05] = "\u{2228}"; // ∨ logical OR
+    this.conciseUpper[0o06] = "\u{2227}"; // ∧ logical AND
+    
+
+
+    
+
+    this.charset       = this.conciseLower;
   }
 
   setFont(type) {
@@ -555,448 +617,7 @@ class PDP1Term {
         }
       }
 
-      //
-      // If this.escSeq is not null, an escape sequence is being
-      // collected.
-      //
 
-      else {
-
-        this.escSeq += ch;
-
-        switch (this.escSeq.charAt(1)) {
-        case "[":
-          let len = this.escSeq.length;
-          if (len > 2 && "0123456789;?".indexOf(ch) < 0) {
-            params = [];
-            if (len > 3) {
-              this.escSeq.substr(2, len - 3).split(";").forEach(p => {
-                if (p.startsWith("?")) {
-                  // Indicate DEC private parameter by negating the value
-                  params.push(0 - parseInt(p.substr(1)));
-                }
-                else if (p.length > 0) {
-                  params.push(parseInt(p));
-                }
-                else {
-                  params.push(0);
-                }
-              });
-            }
-            switch (ch) {
-            case "A": // (CUP) Cursor Up
-              p1 = (params.length > 0) ? params.shift() : 1;
-              if (p1 < 1) p1 = 1;
-              if (this.row >= this.scrollingRegionTop && this.row <= this.scrollingRegionBottom) {
-                this.row -= p1;
-                if (this.row < this.scrollingRegionTop) {
-                  this.row = this.scrollingRegionTop;
-                }
-              }
-              else {
-                this.row -= p1;
-                if (this.row < 0) {
-                  this.row = 0;
-                }
-              }
-              break;
-            case "B": // (CUD) Cursor Down
-              p1 = (params.length > 0) ? params.shift() : 1;
-              if (p1 < 1) p1 = 1;
-              if (this.row >= this.scrollingRegionTop && this.row <= this.scrollingRegionBottom) {
-                this.row += p1;
-                if (this.row > this.scrollingRegionBottom) {
-                  this.row = this.scrollingRegionBottom;
-                }
-              }
-              else {
-                this.row += p1;
-                if (this.row >= this.rows) {
-                  this.row = this.rows - 1;
-                }
-              }
-              break;
-            case "C": // (CUF) Cursor Forward
-              p1 = (params.length > 0) ? params.shift() : 1;
-              if (p1 < 1) p1 = 1;
-              this.col += p1;
-              if (this.col >= this.cols) this.col = this.cols - 1;
-              break;
-            case "D": // (CUB) Cursor Backward
-              p1 = (params.length > 0) ? params.shift() : 1;
-              if (p1 < 1) p1 = 1;
-              this.col -= p1;
-              if (this.col < 0) this.col = 0;
-              break;
-            case "H": // (CUP) Cursor Position
-            case "f": // (HVP) Horizontal and Vertical Position
-              this.row = this.scrollingRegionTop;
-              this.col = 0;
-              if (params.length > 0) {
-                this.row = params.shift();
-                if (this.row > 0) {
-                  this.row--;
-                }
-                else {
-                  this.row = 0;
-                }
-                if (this.originMode) {
-                  this.row += this.scrollingRegionTop;
-                  if (this.row > this.scrollingRegionBottom) {
-                    this.row = this.scrollingRegionBottom;
-                  }
-                }
-                else if (this.row >= this.rows) {
-                  this.row = this.rows - 1;
-                }
-              }
-              if (params.length > 0) {
-                this.col = params.shift();
-                if (this.col > 0) {
-                  --this.col;
-                  if (this.col >= this.cols) this.col = this.cols - 1;
-                }
-                else {
-                  this.col = 0;
-                }
-              }
-              break;
-            case "J": // (ED) Erase In Display
-              p1 = (params.length > 0) ? params.shift() : 0;
-              switch (p1) {
-              case 0: // Erase from the active position to the end of the screen, inclusive
-                this.clearRegion(this.row, this.col, 1, this.cols - this.col);
-                this.clearRegion(this.row + 1, 0, this.rows - (this.row + 1), this.cols);
-                break;
-              case 1: // Erase from start of the screen to the active position, inclusive
-                this.clearRegion(0, 0, this.row, this.cols);
-                this.clearRegion(this.row, 0, 1, this.col + 1);
-                break;
-              case 2: // Erase all of the display.
-                this.clearRegion(0, 0, this.rows, this.cols);
-                break;
-              }
-              break;
-            case "K": // (EL) Erase In Line
-              p1 = (params.length > 0) ? params.shift() : 0;
-              switch (p1) {
-              case 0: // Erase from the active position to the end of the line, inclusive
-                this.clearRegion(this.row, this.col, 1, this.cols - this.col);
-                break;
-              case 1: // Erase from start of the line to the active position, inclusive
-                this.clearRegion(this.row, 0, 1, this.col + 1);
-                break;
-              case 2: // Erase all of the line.
-                this.clearRegion(this.row, 0, 1, this.cols);
-                break;
-              }
-              break;
-            case "c": // What Are You?
-              if (this.uplineDataSender) {
-                this.uplineDataSender("\x1B[?1;0c");
-              }
-              break;
-            case "h": // (SM) Set Mode
-              for (let i = 0; i < params.length; i++) {
-                // set the indicated mode
-                // ?1 - Cursor key mode
-                // ?2 - VT52
-                // ?3 - Column (132 vs 80)
-                // ?4 - Scrolling
-                // ?5 - Screen
-                // ?6 - Origin
-                // ?7 - Autowrap
-                // ?8 - Auto repeat
-                // ?9 - Interlace
-                // 20 - Line feed new line mode
-                switch (params[i]) {
-                case -3:
-                  this.changeWidth(132);
-                  this.clearRegion(0, 0, this.rows, this.cols);
-                  this.row = this.col = 0;
-                  this.scrollingRegionTop = 0;
-                  this.scrollingRegionBottom = this.rows - 1;
-                  break;
-                case -5:
-                  if (this.isScreenMode === false) {
-                    this.bgndColor = "lightgreen";
-                    this.fgndColor = "black";
-                    this.isScreenMode = true;
-                    this.invertScreen();
-                  }
-                  break;
-                case -6:
-                  this.originMode = true;
-                  this.row = this.scrollingRegionTop;
-                  this.col = 0;
-                  break;
-                case -7:
-                  this.autowrapMode = true;
-                  break;
-                case 20:
-                  this.lfNewlineMode = true;
-                  break;
-                }
-              }
-              break;
-            case "g": // (TBC) Tabulation Clear
-              if (params.length < 1) params.push(0);
-              switch (params.shift()) {
-              case 0: // Clear tab stop at active position
-                for (let t = 0; t < this.tabStops.length; t++) {
-                  if (this.tabStops[t] === this.col) {
-                    this.tabStops.splice(t, 1);
-                    break;
-                  }
-                }
-                break;
-              case 3: // Clear all tab stops
-                this.tabStops = [];
-                break;
-              }
-              break;
-            case "l": // (RM) Reset Mode
-              for (let i = 0; i < params.length; i++) {
-                switch (params[i]) {
-                case -3:
-                  this.changeWidth(80);
-                  this.clearRegion(0, 0, this.rows, this.cols);
-                  this.row = this.col = 0;
-                  this.scrollingRegionTop = 0;
-                  this.scrollingRegionBottom = this.rows - 1;
-                  break;
-                case -5:
-                  if (this.isScreenMode === true) {
-                    this.bgndColor = "black";
-                    this.fgndColor = "lightgreen";
-                    this.isScreenMode = false;
-                    this.invertScreen();
-                  }
-                  break;
-                case -6:
-                  this.originMode = false;
-                  this.row = this.col = 0;
-                  break;
-                case -7:
-                  this.autowrapMode = false;
-                  break;
-                case 20:
-                  this.lfNewlineMode = false;
-                  break;
-                }
-              }
-              break;
-            case "m": // (SGR) Select Graphic Rendition
-              if (params.length < 1) params.push(0);
-              for (let i = 0; i < params.length; i++) {
-                switch (params[i]) {
-                case 0: // attributes off
-                  this.underline = this.inverse = false;
-                  break;
-                case 1: // Bold
-                  break;
-                case 4: // Underscore
-                  this.underline = true;
-                  break;
-                case 5: // Blink
-                  break;
-                case 7: // Negative (inverse)
-                  this.inverse = true;
-                  break;
-                }
-              }
-              break;
-            case "n": // (DSR) Device Status Report
-              if (params.length > 0 && this.uplineDataSender) {
-                switch (params[0]) {
-                case 5: // please report status
-                  this.uplineDataSender("\x1B[0n");
-                  break;
-                case 6: // please report active position
-                  this.uplineDataSender(`\x1B[${(this.row - this.scrollingRegionTop) + 1};${this.col + 1}R`);
-                  break;
-                }
-              }
-              break;
-            case "r": // (DECSTBM) Scrolling Region
-              // p1 - top line of region
-              // p2 - bottom line of region
-              this.scrollingRegionTop = 0;
-              this.scrollingRegionBottom = this.rows - 1;
-              if (params.length > 0) {
-                this.scrollingRegionTop = params[0];
-                if (this.scrollingRegionTop > 0) {
-                  this.scrollingRegionTop--;
-                }
-                if (params.length > 1) {
-                  this.scrollingRegionBottom = params[1];
-                  if (this.scrollingRegionBottom < 1) {
-                    this.scrollingRegionBottom = this.rows - 1;
-                  }
-                  else {
-                    this.scrollingRegionBottom--;
-                  }
-                }
-              }
-              if (this.scrollingRegionTop >= this.scrollingRegionBottom) {
-                this.scrollingRegionBottom = this.scrollingRegionTop + 1;
-              }
-              this.row = this.originMode ? this.scrollingRegionTop : 0;
-              this.col = 0;
-              break;
-            case "x": // (DECREQTPARM) Request Terminal Parameters
-              // 0 or none - unsolicited reports enabled
-              // 1 - report on explicit request only
-              // 2 - this message is a report
-              // 3 - this message is a report triggered by explicit request
-              break;
-            case "y": // (DECTST) Invoke Confidence Test
-              // p1 == 2
-              // p2 == 0 - reset terminal
-              if (params.length < 1 || params.shift() == 0) {
-                this.reset();
-              }
-              break;
-            }
-            this.escSeq = null;
-          }
-          break;
-        case "#":
-          if (this.escSeq.length > 2) {
-            switch (this.escSeq.charAt(2)) {
-            case "3": // Change this line to double-height top half
-            case "4": // Change this line to double-height bottom half
-            case "5": // Change this line to single-width single-height
-            case "6": // Change this line to double-width single-height
-              break;
-            case "8": // Screen Alignment Display
-              for (let r = 0; r < this.rows; r++) {
-                for (let c = 0; c < this.cols; c++) {
-                  this.drawChar("E", r, c);
-                }
-              }
-              break;
-            }
-            this.escSeq = null;
-          }
-          break;
-        case "(": // Set G0 character set, invoked by <SI>
-          if (this.escSeq.length > 2) {
-            switch (this.escSeq.charAt(2)) {
-            case "A": // UK set
-              break;
-            case "B": // ASCII set
-              this.G0 = this.normalSet;
-              break;
-            case "0": // Special graphics
-              this.G0 = this.graphicSet;
-              break;
-            case "1": // Alternate character ROM standard character set
-              break;
-            case "2": // Alternate character ROM special character set
-              break;
-            default:
-              break;
-            }
-            this.escSeq = null;
-          }
-          break;
-        case ")": // Set G1 character set, invoked by <SO>
-          if (this.escSeq.length > 2) {
-            switch (this.escSeq.charAt(2)) {
-            case "A": // UK set
-              break;
-            case "B": // ASCII set
-              this.G1 = this.normalSet;
-              break;
-            case "0": // Special graphics
-              this.G1 = this.graphicSet;
-              break;
-            case "1": // Alternate character ROM standard character set
-              break;
-            case "2": // Alternate character ROM special character set
-              break;
-            default:
-              break;
-            }
-            this.escSeq = null;
-          }
-          break;
-        case "=": // Keypad Application Mode
-          this.escSeq = null;
-          break;
-        case ">": // Keypad Numeric Mode
-          this.escSeq = null;
-          break;
-        case "7": // Save Cursor
-          this.savedRow = this.row;
-          this.savedCol = this.col;
-          this.escSeq = null;
-          break;
-        case "8": // Restore Cursor
-          if (this.savedRow && this.savedCol) {
-            this.row = this.savedRow;
-            this.col = this.savedCol;
-          }
-          this.escSeq = null;
-          break;
-        case "D": // Cursor Down
-          if (this.row === this.scrollingRegionBottom) {
-            this.scrollUp(this.scrollingRegionTop, this.row);
-          }
-          else if (this.row >= this.rows) {
-            this.row = this.rows - 1;
-            this.scrollUp(0, this.row);
-          }
-          else {
-            this.row++;
-          }
-          this.escSeq = null;
-          break;
-        case "E": // Next Line
-          if (this.row === this.scrollingRegionBottom) {
-            this.scrollUp(this.scrollingRegionTop, this.row);
-          }
-          else if (this.row >= this.rows) {
-            this.row = this.rows - 1;
-            this.scrollUp(0, this.row);
-          }
-          else {
-            this.row++;
-          }
-          this.col = 0;
-          this.escSeq = null;
-          break;
-        case "H": // Set Horizontal Tab
-          this.tabStops.push(this.col);
-          this.tabStops.sort((a, b) => a - b);
-          this.escSeq = null;
-          break;
-        case "M": // Cursor Up
-          if (this.row === this.scrollingRegionTop) {
-            this.scrollDown(this.row, this.scrollingRegionBottom);
-          }
-          else if (this.row < 1) {
-            this.row = 0;
-            this.scrollDown(this.row, this.rows - 1);
-          }
-          else {
-            this.row--;
-          }
-          this.escSeq = null;
-          break;
-        case "Z": // Identify Terminal
-          this.escSeq = null;
-          break;
-        case "c": // Reset Terminal
-          this.reset();
-          this.escSeq = null;
-          break;
-        default:
-          this.escSeq = null;
-          break;
-        }
-      }
     }
 
     this.showCursor();
