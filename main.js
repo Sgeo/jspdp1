@@ -7,6 +7,7 @@ var ac=0, io=0, pc=4, y, ib, ov=0, bank=0, ma=0, mb=0;
 // instructions retrieving from pc or modifying pc or exposing pc need to take this into account.
 var _flag = [false, false, false, false, false, false];
 var _sense = [false, false, false, false, false, false];
+var _mouse = undefined; // undefined when mouse not held down. Array of [x, y] when mouse button held down
 function flag(flagnum, value) {
 	if(typeof value === 'undefined') {
 		if(flagnum === 7) {
@@ -93,6 +94,8 @@ function setup(){
 	ctx.clearRect(0,0,512,512);
 	window.onkeydown = function(e){handleKeydown (e);}
 	window.onkeyup = function(e){handleKeyup(e);}
+	canvas.onpointerdown = handlePointerDown;
+	canvas.onpointerup = handlePointerUp;
 	timer = setInterval(frame, 56); 
 	requestAnimationFrame(onAnimationFrame);
 }
@@ -121,6 +124,14 @@ function handleKeyup(e){
 	if (c=='K') control &= ~0100000;
 	if (c=='J') control &= ~0200000;
 	if (c=='L') control &= ~0400000;
+}
+
+function handlePointerDown(e) {
+	_mouse = [e.offsetX, e.offsetY];
+}
+
+function handlePointerUp(e) {
+	_mouse = undefined;
 }
 
 function onAnimationFrame() {
@@ -312,6 +323,7 @@ function* dispatch(md) {
 		if ((y&077)==011) {io = control; break;}
 		if ((y&0o7777)==0o4074) {extend = 1; break;} // eem
 		if ((y&0o7777)==0o0074) {extend = 0; break;} // lem
+		if((y&0o0003)==0o0003) {console.log(`Typewriter out: ${oct(io&0o77)}`); break;}
 		console.error("Unknown IOT", `0o${md.toString(8)}`);
 		running = 0;
 		break;
@@ -388,6 +400,14 @@ function dpy(){
 	x = display_jitter(x);
 	y = display_jitter(y);
 	ctx.fillRect(x/2,y/2,1,1);
+	if(typeof _mouse === "object") {
+		let [mouse_x, mouse_y] = _mouse;
+		let delta_x = Math.abs(mouse_x - x/2); // x is internal coords, convert to screen coords
+		let delta_y = Math.abs(mouse_y - y/2);
+		if((delta_x**2 + delta_y**2) < 9) {
+			flag(3, true);
+		}
+	}
 }
 
 
