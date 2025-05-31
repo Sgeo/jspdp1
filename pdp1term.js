@@ -151,6 +151,10 @@ class PDP1Term {
     
 
     this.charset       = this.conciseLower;
+
+    (new FontFace("IBM Plex Mono", "url(IBMPlexMono-Regular.woff2)")).load().then(font => {
+      document.fonts.add(font);
+    });
   }
 
   setFont(type) {
