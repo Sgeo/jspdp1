@@ -326,7 +326,7 @@ function* dispatch(md) {
 		if ((y&077)==011) {io = control; break;}
 		if ((y&0o7777)==0o4074) {extend = 1; break;} // eem
 		if ((y&0o7777)==0o0074) {extend = 0; break;} // lem
-		if((y&0o0003)==0o0003) {console.log(`Typewriter out: ${oct(io&0o77)}`); break;}
+		if((y&0o0003)==0o0003) {console.log(`Typewriter out: ${oct(io&0o77)}`); pdp1term.renderCode(io&0o77); break;}
 		console.error("Unknown IOT", `0o${md.toString(8)}`);
 		running = 0;
 		break;
