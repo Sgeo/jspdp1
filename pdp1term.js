@@ -28,7 +28,7 @@ class PDP1Term {
     this.lfNewlineMode = false;
     this.originMode    = false;
     this.overstrike    = true;
-    this.row           = 0;
+    this.row           = 23;
     this.rows          = 24;
     this.tabStops      = [7,15,23,31,39,47,55,63,71,79];
     this.underline     = false;
@@ -392,7 +392,7 @@ class PDP1Term {
 
   reset() {
     this.autowrapMode  = false;
-    this.row           = 0;
+    this.row           = this.rows - 1;
     this.col           = 0;
     this.charset       = this.normalSet;
     this.cursorKeyMode = false;
