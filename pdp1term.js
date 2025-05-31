@@ -156,7 +156,7 @@ class PDP1Term {
   setFont(type) {
 
     this.charset = this.normalSet = this.conciseLower;
-    this.font = `${this.fontHeight - 1}px APL2741`;
+    this.font = `${this.fontHeight - 1}px IBM Plex Mono`;
     this.overstrike = true;
     this.G0 = this.G1 = this.normalSet = this.conciseLower;
 
@@ -490,6 +490,7 @@ class PDP1Term {
     let char = this.charset[code];
     if(typeof char === "undefined") {
       console.error("Unknown concise character: 0o", code.toString(8));
+      this.renderText("\u{FFFD}");
     } else if(typeof char === "function") {
       char();
     } else {
