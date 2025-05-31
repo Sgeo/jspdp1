@@ -135,6 +135,7 @@ class PDP1Term {
     this.conciseLower[0o70] = "h";
     this.conciseLower[0o71] = "i";
     this.conciseLower[0o72] = () => {this.charset = this.conciseLower;};
+    this.conciseLower[0o73] = ".";
     this.conciseLower[0o74] = () => {this.charset = this.conciseUpper;};
     this.conciseLower[0o75] = "\b";
     this.conciseLower[0o77] = "\n";
@@ -147,8 +148,51 @@ class PDP1Term {
     this.conciseUpper[0o04] = "\u{2283}"; // ⊃, supposed to be implies(?)
     this.conciseUpper[0o05] = "\u{2228}"; // ∨ logical OR
     this.conciseUpper[0o06] = "\u{2227}"; // ∧ logical AND
-    
-
+    this.conciseUpper[0o07] = "<";
+    this.conciseUpper[0o10] = ">";
+    this.conciseUpper[0o11] = "\u{2191}"; // ↑
+    this.conciseUpper[0o20] = "\u{2192}"; // →
+    this.conciseUpper[0o21] = "?";
+    this.conciseUpper[0o22] = "S";
+    this.conciseUpper[0o23] = "T";
+    this.conciseUpper[0o24] = "U";
+    this.conciseUpper[0o25] = "V";
+    this.conciseUpper[0o26] = "W";
+    this.conciseUpper[0o27] = "X";
+    this.conciseUpper[0o30] = "Y";
+    this.conciseUpper[0o31] = "Z";
+    this.conciseUpper[0o33] = "=";
+    this.conciseUpper[0o34] = () => {this.fgndColor = "black";};
+    this.conciseUpper[0o35] = () => {this.fgndColor = "red";};
+    this.conciseUpper[0o36] = "\t";
+    this.conciseUpper[0o40] = "_\b"; // _ non-spacing
+    this.conciseUpper[0o41] = "J";
+    this.conciseUpper[0o42] = "K";
+    this.conciseUpper[0o43] = "L";
+    this.conciseUpper[0o44] = "M";
+    this.conciseUpper[0o45] = "N";
+    this.conciseUpper[0o46] = "O";
+    this.conciseUpper[0o47] = "P";
+    this.conciseUpper[0o50] = "Q";
+    this.conciseUpper[0o51] = "R";
+    this.conciseUpper[0o52] = "+";
+    this.conciseUpper[0o55] = "]";
+    this.conciseUpper[0o56] = "|\b"; // | non-spacing
+    this.conciseUpper[0o57] = "[";
+    this.conciseUpper[0o61] = "A";
+    this.conciseUpper[0o62] = "B";
+    this.conciseUpper[0o63] = "C";
+    this.conciseUpper[0o64] = "D";
+    this.conciseUpper[0o65] = "E";
+    this.conciseUpper[0o66] = "F";
+    this.conciseUpper[0o67] = "G";
+    this.conciseUpper[0o70] = "I";
+    this.conciseUpper[0o71] = "I";
+    this.conciseUpper[0o72] = () => {this.charset = this.conciseLower;};
+    this.conciseUpper[0o73] = "\u{00D7}"; // × multiplication sign
+    this.conciseUpper[0o74] = () => {this.charset = this.conciseUpper;};
+    this.conciseUpper[0o75] = "\b";
+    this.conciseUpper[0o77] = "\n";
 
     
 
