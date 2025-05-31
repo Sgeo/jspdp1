@@ -163,10 +163,10 @@ class PDP1Term {
     let testLine = "MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM";
     let cnv = document.createElement("canvas");
     let ctx = cnv.getContext("2d");
-    cnv.width = testLine.length * 15;
+    this.fontWidth = Math.round(ctx.measureText(testLine).width / testLine.length);
+    cnv.width = testLine.length * this.fontWidth;
     cnv.height = this.fontHeight;
     ctx.font = this.font;
-    this.fontWidth = Math.round(ctx.measureText(testLine).width / testLine.length);
   }
 
   setInvertDelBs(invertDelBs) {
