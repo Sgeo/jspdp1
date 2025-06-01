@@ -129,7 +129,7 @@ class PDP1Term {
     this.conciseUpper[0o47] = "P";
     this.conciseUpper[0o50] = "Q";
     this.conciseUpper[0o51] = "R";
-    this.conciseUpper[0o52] = "+";
+    this.conciseUpper[0o54] = "+";
     this.conciseUpper[0o55] = "]";
     this.conciseUpper[0o56] = "|\b"; // | non-spacing
     this.conciseUpper[0o57] = "[";
@@ -140,7 +140,7 @@ class PDP1Term {
     this.conciseUpper[0o65] = "E";
     this.conciseUpper[0o66] = "F";
     this.conciseUpper[0o67] = "G";
-    this.conciseUpper[0o70] = "I";
+    this.conciseUpper[0o70] = "H";
     this.conciseUpper[0o71] = "I";
     this.conciseUpper[0o72] = () => {this.charset = this.conciseLower;};
     this.conciseUpper[0o73] = "\u{00D7}"; // × multiplication sign
