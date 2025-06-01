@@ -252,7 +252,7 @@ function* dispatch(md) {
 			ac=ac+1+mb;
 			ac=(ac+(ac>>18))&0777777;
 		}
-		if (ac==0o1000000) ac=0;
+		ac=fixMinusZero(ac);
 		break;
 	case JMP: yield* ea(); pc=ma&0o7777; bank=ma>>12; break;
 	case JSP: yield* ea(); ac=(ov<<17)+(extend<<16)+(bank<<12)+pc; pc=ma&0o7777; bank=ma>>12; break;
