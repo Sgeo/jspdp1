@@ -20,9 +20,14 @@
     flex-direction: row;
     justify-content: flex-end;
   }
+  .outputs  {
+    display: flex;
+    flex-direction: row
+  }
 </style>
 <script type="text/javascript" src="pdp1console.js"></script>
 <script type="text/javascript" src="pdp1audio.js"></script>
+<script type="text/javascript" src="pdp1term.js"></script>
 <script type="text/javascript" src="main.js"></script>
 <script type="text/javascript" src="spacewar.bin.js"></script>
 <script type="text/javascript" src="ptr.js"></script>
@@ -37,10 +42,13 @@
 <h1><font face="Arial"><font size="5">JS-PDP-1</font><br>
 <font size="3">Javascript PDP-1 emulator.</font></font></h1>
 <h1><a href = "https://spacewar.oversigma.com/"><font face="Arial" size="3">Based on a Javascript PDP-1 emulator by Barry Silverman, Brian Silverman, and Vadim Gerasimov</font></a></h1><p>
+<div class="outputs">
 <div class="frame" id="frame">
 <div class="crt">
 <canvas class="crt" id="swcanvas"></canvas>
 </div>
+</div>
+<div id="termframe"></div>
 </div>
 <div id="console" class="console-container">
   <div class="console-column-container">

@@ -45,7 +45,7 @@ function sense(sensenum, value) {
 var extend = 0;
 var control=0;
 var elapsedTime = 0;
-var running = 1;
+var running = 0;
 var testWord = 0o000000;
 var testAddress = 0;
 var cpuhistory = false;
@@ -86,6 +86,7 @@ function sign(num) {
 function setup(){
 	pdp1console = new PDP1Console;
 	pdp1audio = new PDP1Audio;
+	pdp1term = new PDP1Term;
 	canvas = document.getElementById('swcanvas');
 	canvas.width = 512;
 	canvas.height =512;
@@ -96,6 +97,8 @@ function setup(){
 	window.onkeyup = function(e){handleKeyup(e);}
 	canvas.onpointerdown = handlePointerDown;
 	canvas.onpointerup = handlePointerUp;
+	pdp1term.createScreen("any", 24, 80);
+	document.getElementById("termframe").append(pdp1term.getCanvas());
 	timer = setInterval(frame, 56); 
 	requestAnimationFrame(onAnimationFrame);
 }
@@ -249,7 +252,7 @@ function* dispatch(md) {
 			ac=ac+1+mb;
 			ac=(ac+(ac>>18))&0777777;
 		}
-		if (ac==0o1000000) ac=0;
+		ac=fixMinusZero(ac);
 		break;
 	case JMP: yield* ea(); pc=ma&0o7777; bank=ma>>12; break;
 	case JSP: yield* ea(); ac=(ov<<17)+(extend<<16)+(bank<<12)+pc; pc=ma&0o7777; bank=ma>>12; break;
@@ -323,7 +326,7 @@ function* dispatch(md) {
 		if ((y&077)==011) {io = control; break;}
 		if ((y&0o7777)==0o4074) {extend = 1; break;} // eem
 		if ((y&0o7777)==0o0074) {extend = 0; break;} // lem
-		if((y&0o0003)==0o0003) {console.log(`Typewriter out: ${oct(io&0o77)}`); break;}
+		if((y&0o0003)==0o0003) {console.log(`Typewriter out: ${oct(io&0o77)}`); pdp1term.renderCode(io&0o77); break;}
 		console.error("Unknown IOT", `0o${md.toString(8)}`);
 		running = 0;
 		break;
@@ -406,7 +409,7 @@ function dpy(){
 		let delta_y = Math.abs(mouse_y - y/2);
 		if((delta_x**2 + delta_y**2) < 9) {
 			flag(3, true);
-		}
+}
 	}
 }
 
