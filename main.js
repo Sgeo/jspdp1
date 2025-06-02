@@ -3,6 +3,9 @@ function oct(num) {
 }
 
 var ac=0, io=0, pc=4, y, ib, ov=0, bank=0, ma=0, mb=0;
+var MULDIV = false; // Hardware MUL/DIV?
+var JITTER = 1; // Shake the display plots to increase legibility?
+var LIGHTPEN_RADIUS = 3; // Radius of point detection on lightpen click
 // pc contains 12-bit address even in extended mode, 4 bit bank is in bank only.
 // instructions retrieving from pc or modifying pc or exposing pc need to take this into account.
 var _flag = [false, false, false, false, false, false];
@@ -232,13 +235,46 @@ function* dispatch(md) {
 	case SAS: yield* ea(); yield* emb(); if(ac==mb) pc++; break;
 	case MUS:
 		yield* ea(); yield* emb();
-		if ((io&1)==1){
-			ac=ac+mb;
-			ac=(ac+(ac>>18))&0777777;
-			if (ac==0777777) ac=0;
+		if(MULDIV) {
+			// Not timing accurate
+			// let sign_ac = sign(ac);
+			// let sign_mb = sign(mb);
+			let ac_num = ac;
+			let ac_sign = 0;
+			let mb_num = mb;
+			let mb_sign = 0;
+			if(ac_num >= 0o400000) {
+				ac_num ^= 0o777777;
+				ac_sign = 1;
+			}
+			if(mb_num >= 0o400000) {
+				mb_num ^= 0o777777;
+				mb_sign = 1;
+			}
+			let mult = ac_num * mb_num;
+			let sign = ac_sign ^ mb_sign;
+			let left = (mult/16)>>>13; // unsigned left shift 17, but staying within 32-bit limit of unsigned right shift operator
+			//let left = Number(BigInt(mult)>>BigInt(17));
+			let right = (mult&0o377777)<<1;
+			if(sign) {
+				left ^= 0o377777;
+				right ^= 0o777776;
+			}
+			ac = (sign<<17)|left;
+			io = right|sign;
+			if(ac === 0o777777 && io === 0o777777) {
+				ac = 0;
+				io = 0;
+			}
+		} else {
+			if ((io&1)==1){
+				ac=ac+mb;
+				ac=(ac+(ac>>18))&0777777;
+				if (ac==0777777) ac=0;
+			}
+			io=(io>>1|ac<<17)&0777777;
+			ac>>=1;
 		}
-		io=(io>>1|ac<<17)&0777777;
-		ac>>=1;
 		break;
 	case DIS:
 		yield* ea(); yield* emb();
@@ -326,7 +362,7 @@ function* dispatch(md) {
 		if ((y&077)==011) {io = control; break;}
 		if ((y&0o7777)==0o4074) {extend = 1; break;} // eem
 		if ((y&0o7777)==0o0074) {extend = 0; break;} // lem
-		if((y&0o0003)==0o0003) {console.log(`Typewriter out: ${oct(io&0o77)}`); pdp1term.renderCode(io&0o77); break;}
+		if((y&0o0003)==0o0003) {pdp1term.renderCode(io&0o77); break;}
 		console.error("Unknown IOT", `0o${md.toString(8)}`);
 		running = 0;
 		break;
@@ -383,9 +419,9 @@ function num_from_ones(width) {
 	}
 }
 
-num_from_ones_dpy = num_from_ones(10);
+num_from_ones_18 = num_from_ones(18);
 
-const JITTER = 1;
+num_from_ones_dpy = num_from_ones(10);
 
 function display_jitter(coord) {
 	// https://bitsavers.org/pdf/mit/rle_pdp1/memos/pdp35-2_sep71.pdf states accuracy is 3% of raster size
@@ -407,7 +443,7 @@ function dpy(){
 		let [mouse_x, mouse_y] = _mouse;
 		let delta_x = Math.abs(mouse_x - x/2); // x is internal coords, convert to screen coords
 		let delta_y = Math.abs(mouse_y - y/2);
-		if((delta_x**2 + delta_y**2) < 9) {
+		if((delta_x**2 + delta_y**2) < (LIGHTPEN_RADIUS**2)) {
 			flag(3, true);
 }
 	}
