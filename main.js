@@ -253,15 +253,15 @@ function* dispatch(md) {
 			}
 			let mult = ac_num * mb_num;
 			let sign = ac_sign ^ mb_sign;
-			let left = (mult/16)>>>13; // unsigned left shift 17, but staying within 32-bit limit of unsigned right shift operator
+			ac = (mult/16)>>>13; // unsigned left shift 17, but staying within 32-bit limit of unsigned right shift operator
 			//let left = Number(BigInt(mult)>>BigInt(17));
-			let right = (mult&0o377777)<<1;
+			io = (mult&0o377777)<<1;
 			if(sign) {
-				left ^= 0o377777;
-				right ^= 0o777776;
+				// Flips sign from 0 to 1 as well as rest of number into 1's complement
+				ac ^= 0o777777;
+				io ^= 0o777777;
 			}
-			ac = (sign<<17)|left;
-			io = right|sign;
+
 			if(ac === 0o777777 && io === 0o777777) {
 				ac = 0;
 				io = 0;
