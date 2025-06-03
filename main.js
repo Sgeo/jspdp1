@@ -261,7 +261,6 @@ function* dispatch(md) {
 				ac ^= 0o777777;
 				io ^= 0o777777;
 			}
-
 			if(ac === 0o777777 && io === 0o777777) {
 				ac = 0;
 				io = 0;
@@ -278,17 +277,51 @@ function* dispatch(md) {
 		break;
 	case DIS:
 		yield* ea(); yield* emb();
-		var acl=ac>>17;
-		ac=(ac<<1|io>>17)&0777777;
-		io=((io<<1|acl)&0777777)^1;
-		if ((io&1)==1){
-			ac=ac+(mb^0777777);
-			ac=(ac+(ac>>18))&0777777;}
-		else {
-			ac=ac+1+mb;
-			ac=(ac+(ac>>18))&0777777;
+		if(MULDIV) {
+			let dividend_left = ac;
+			let dividend_right = io;
+			let dividend_sign = dividend_left >= 0o400000 ? 1 : 0;
+			if(dividend_sign) {
+				dividend_left ^= 0o777777;
+				dividend_right ^= 0o777777;
+			}
+			let divisor = mb;
+			let divisor_sign = divisor >= 0o400000 ? 1 : 0;
+			if(divisor_sign) {
+				divisor ^= 0o777777;
+			}
+			if(dividend_left < divisor) {
+				// No overflow
+				let dividend = (dividend_left*0o400000)+(dividend_right>>1); // Don't trust shift left or bitwise OR for large numbers
+				let quotient = Math.trunc(dividend/divisor);
+				let remainder = dividend%divisor;
+				ac = quotient;
+				io = remainder;
+				let quotient_sign = dividend_sign ^ divisor_sign;
+				// remainder_sign is dividend sign
+				if(quotient_sign) {
+					ac ^= 0o777777;
+				}
+				if(dividend_sign) {
+					io ^= 0o777777;
+				}
+				ac = fixMinusZero(ac);
+				io = fixMinusZero(io);
+				pc++; // Skip next instruction (used to detect overflow)
+			}
+		} else {
+			var acl=ac>>17;
+			ac=(ac<<1|io>>17)&0777777;
+			io=((io<<1|acl)&0777777)^1;
+			if ((io&1)==1){
+				ac=ac+(mb^0777777);
+				ac=(ac+(ac>>18))&0777777;}
+			else {
+				ac=ac+1+mb;
+				ac=(ac+(ac>>18))&0777777;
+			}
+			ac=fixMinusZero(ac);
 		}
-		ac=fixMinusZero(ac);
 		break;
 	case JMP: yield* ea(); pc=ma&0o7777; bank=ma>>12; break;
 	case JSP: yield* ea(); ac=(ov<<17)+(extend<<16)+(bank<<12)+pc; pc=ma&0o7777; bank=ma>>12; break;
