@@ -13,7 +13,8 @@
             //     document.querySelector("img").src = URL.createObjectURL(blob);
             // });
             import { BALL, createTapeSVG } from "./papertapeviewer.js";
-            document.body.append(createTapeSVG(BALL));
+            let svg = createTapeSVG(BALL);
+            document.querySelector("img").src = URL.createObjectURL(svg);
         </script>
     </body>
 </html>

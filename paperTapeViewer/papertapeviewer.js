@@ -63,24 +63,25 @@ const SVGNS = "http://www.w3.org/2000/svg";
 
 function circleSVG(svg, radius, x, y) {
     // radius, x, y assumed to be inches as a number
-    let circle = document.createElementNS(SVGNS, "circle");
-    circle.setAttribute("cx", `${x}in`);
-    circle.setAttribute("cy", `${y}in`);
-    circle.setAttribute("r", `${radius}in`);
-    circle.setAttribute("fill", "black");
+    let circle = svg.ownerDocument.createElementNS(SVGNS, "circle");
+    circle.setAttributeNS(null, "cx", `${x}in`);
+    circle.setAttributeNS(null, "cy", `${y}in`);
+    circle.setAttributeNS(null, "r", `${radius}in`);
+    circle.setAttributeNS(null, "fill", "black");
     svg.appendChild(circle);
 }
 
 function createTapeSVG(data) {
-    let svg = document.createElementNS(SVGNS, "svg");
-    svg.setAttribute("width", `${HOLE_SPACING * data.length + 2}in`);
-    svg.setAttribute("height", `${TAPE_HEIGHT}in`);
+    let svgDocument = document.implementation.createDocument(SVGNS, "svg");
+    let svg = svgDocument.documentElement;
+    svg.setAttributeNS(null, "width", `${HOLE_SPACING * data.length + 2}in`);
+    svg.setAttributeNS(null, "height", `${TAPE_HEIGHT}in`);
     let background = document.createElementNS(SVGNS, "rect");
-    background.setAttribute("fill", "lightyellow");
-    background.setAttribute("x", "0");
-    background.setAttribute("y", "0");
-    background.setAttribute("width", "100%");
-    background.setAttribute("height", "100%");
+    background.setAttributeNS(null, "fill", "lightyellow");
+    background.setAttributeNS(null, "x", "0");
+    background.setAttributeNS(null, "y", "0");
+    background.setAttributeNS(null, "width", "100%");
+    background.setAttributeNS(null, "height", "100%");
     svg.append(background);
     let column_num = 1;
     for(let byte of data) {
@@ -99,7 +100,7 @@ function createTapeSVG(data) {
         }
         column_num++;
     }
-    return svg;
+    return new Blob([(new XMLSerializer).serializeToString(svgDocument)], {type: "image/svg+xml"});
 }
 
 export { BALL, createTapeImage, createTapeSVG }
