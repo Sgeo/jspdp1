@@ -58,4 +58,48 @@ function createTapeImage(data) {
     return canvas.convertToBlob();
 }
 
-export { BALL, createTapeImage }
+
+const SVGNS = "http://www.w3.org/2000/svg";
+
+function circleSVG(svg, radius, x, y) {
+    // radius, x, y assumed to be inches as a number
+    let circle = document.createElementNS(SVGNS, "circle");
+    circle.setAttribute("cx", `${x}in`);
+    circle.setAttribute("cy", `${y}in`);
+    circle.setAttribute("r", `${radius}in`);
+    circle.setAttribute("fill", "black");
+    svg.appendChild(circle);
+}
+
+function createTapeSVG(data) {
+    let svg = document.createElementNS(SVGNS, "svg");
+    svg.setAttribute("width", `${HOLE_SPACING * data.length + 2}in`);
+    svg.setAttribute("height", `${TAPE_HEIGHT}in`);
+    let background = document.createElementNS(SVGNS, "rect");
+    background.setAttribute("fill", "lightyellow");
+    background.setAttribute("x", "0");
+    background.setAttribute("y", "0");
+    background.setAttribute("width", "100%");
+    background.setAttribute("height", "100%");
+    svg.append(background);
+    let column_num = 1;
+    for(let byte of data) {
+        for(let hole = 0; hole < 9; hole++) {
+            let bit = bitFromHoleNum(hole);
+            let x = column_num * HOLE_SPACING;
+            let y = (hole + 1) * HOLE_SPACING;
+            if(bit === "sprocket") {
+                circleSVG(svg, SPROKET_HOLE_DIAMETER / 2.0, x, y);
+            } else {
+                let bitvalue = byte & (1<<bit);
+                if(bitvalue) {
+                    circleSVG(svg, DATA_HOLE_DIAMETER / 2.0, x, y);
+                }
+            }
+        }
+        column_num++;
+    }
+    return svg;
+}
+
+export { BALL, createTapeImage, createTapeSVG }

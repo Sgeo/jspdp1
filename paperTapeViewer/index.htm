@@ -8,10 +8,12 @@
         <img>
         <!-- <script type="module" src="papertapeviewer.js"></script> -->
         <script type="module">
-            import { BALL, createTapeImage } from "./papertapeviewer.js";
-            createTapeImage(BALL).then(blob => {
-                document.querySelector("img").src = URL.createObjectURL(blob);
-            });
+            // import { BALL, createTapeImage } from "./papertapeviewer.js";
+            // createTapeImage(BALL).then(blob => {
+            //     document.querySelector("img").src = URL.createObjectURL(blob);
+            // });
+            import { BALL, createTapeSVG } from "./papertapeviewer.js";
+            document.body.append(createTapeSVG(BALL));
         </script>
     </body>
 </html>
