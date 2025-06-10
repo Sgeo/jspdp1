@@ -9,10 +9,14 @@ function pxFromInch(inch) {
     return inch * 96;
 }
 
+// https://www.govinfo.gov/content/pkg/GOVPUB-C13-ca9eb746e25a5f1218b695f4e8e6e367/pdf/GOVPUB-C13-ca9eb746e25a5f1218b695f4e8e6e367.pdf
+
 const TAPE_HEIGHT = 1.0;
 const HOLE_SPACING = 0.1; // Both horizontal and vertical
 const DATA_HOLE_DIAMETER = 0.072;
 const SPROKET_HOLE_DIAMETER = 0.046;
+const EDGE_TO_SPROCKET = 0.392;
+const SPROCKET_HOLE = 3;
 
 function bitFromHoleNum(hole) {
     // Returns which bit to use from the byte for a given hole
@@ -88,7 +92,7 @@ function createTapeSVG(data) {
         for(let hole = 0; hole < 9; hole++) {
             let bit = bitFromHoleNum(hole);
             let x = column_num * HOLE_SPACING;
-            let y = (hole + 1) * HOLE_SPACING;
+            let y = EDGE_TO_SPROCKET + (hole - SPROCKET_HOLE) * HOLE_SPACING;
             if(bit === "sprocket") {
                 circleSVG(svg, SPROKET_HOLE_DIAMETER / 2.0, x, y);
             } else {
