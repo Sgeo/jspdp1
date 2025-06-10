@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <title>Paper tape viewer</title>
+    </head>
+    <body>
+        <img>
+        <!-- <script type="module" src="papertapeviewer.js"></script> -->
+        <script type="module">
+            import { BALL, createTapeImage } from "./papertapeviewer.js";
+            createTapeImage(BALL).then(blob => {
+                document.querySelector("img").src = URL.createObjectURL(blob);
+            });
+        </script>
+    </body>
+</html>
