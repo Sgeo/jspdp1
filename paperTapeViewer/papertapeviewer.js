@@ -65,14 +65,46 @@ function createTapeImage(data) {
 
 const SVGNS = "http://www.w3.org/2000/svg";
 
-function circleSVG(svg, radius, x, y) {
+function circleSVG(symbol, radius, x, y) {
     // radius, x, y assumed to be inches as a number
-    let circle = svg.ownerDocument.createElementNS(SVGNS, "circle");
+    let circle = symbol.ownerDocument.createElementNS(SVGNS, "circle");
     circle.setAttributeNS(null, "cx", `${x}in`);
     circle.setAttributeNS(null, "cy", `${y}in`);
     circle.setAttributeNS(null, "r", `${radius}in`);
     circle.setAttributeNS(null, "fill", "black");
-    svg.appendChild(circle);
+    symbol.appendChild(circle);
+}
+
+let BYTE_SYMBOL_EXISTS = []; // Undefined if byte doesn't have a symbol yet, true if it does
+
+function getUseForByte(defs, byte) {
+    let id = byte.toString(16).padStart(2, "0");
+
+    if(!BYTE_SYMBOL_EXISTS[byte]) {
+        let symbol = document.createElementNS(SVGNS, "symbol");
+        symbol.setAttributeNS(null, "id", id);
+        for(let hole = 0; hole < 9; hole++) {
+            let bit = bitFromHoleNum(hole);
+            let x = 0.1;
+            let y = EDGE_TO_SPROCKET + (hole - SPROCKET_HOLE) * HOLE_SPACING;
+            if(bit === "sprocket") {
+                circleSVG(symbol, SPROKET_HOLE_DIAMETER / 2.0, x, y);
+            } else {
+                let bitvalue = byte & (1<<bit);
+                if(bitvalue) {
+                    circleSVG(symbol, DATA_HOLE_DIAMETER / 2.0, x, y);
+                }
+            }
+        }
+        defs.append(symbol);
+        BYTE_SYMBOL_EXISTS[byte] = true;
+    }
+
+    let use = document.createElementNS(SVGNS, "use");
+    use.setAttributeNS(null, "href", `#${id}`);
+
+    return use;
+
 }
 
 function createTapeSVG(data) {
@@ -80,6 +112,8 @@ function createTapeSVG(data) {
     let svg = svgDocument.documentElement;
     svg.setAttributeNS(null, "width", `${HOLE_SPACING * data.length + 2}in`);
     svg.setAttributeNS(null, "height", `${TAPE_HEIGHT}in`);
+    let defs = document.createElementNS(SVGNS, "defs");
+    svg.append(defs);
     let background = document.createElementNS(SVGNS, "rect");
     background.setAttributeNS(null, "fill", "lightyellow");
     background.setAttributeNS(null, "x", "0");
@@ -87,21 +121,11 @@ function createTapeSVG(data) {
     background.setAttributeNS(null, "width", "100%");
     background.setAttributeNS(null, "height", "100%");
     svg.append(background);
-    let column_num = 1;
+    let column_num = 0;
     for(let byte of data) {
-        for(let hole = 0; hole < 9; hole++) {
-            let bit = bitFromHoleNum(hole);
-            let x = column_num * HOLE_SPACING;
-            let y = EDGE_TO_SPROCKET + (hole - SPROCKET_HOLE) * HOLE_SPACING;
-            if(bit === "sprocket") {
-                circleSVG(svg, SPROKET_HOLE_DIAMETER / 2.0, x, y);
-            } else {
-                let bitvalue = byte & (1<<bit);
-                if(bitvalue) {
-                    circleSVG(svg, DATA_HOLE_DIAMETER / 2.0, x, y);
-                }
-            }
-        }
+        let use = getUseForByte(defs, byte);
+        use.setAttributeNS(null, "x", `${column_num * HOLE_SPACING}in`);
+        svg.append(use);
         column_num++;
     }
     return new Blob([(new XMLSerializer).serializeToString(svgDocument)], {type: "image/svg+xml"});
