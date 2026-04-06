@@ -266,6 +266,10 @@
       <button data-tape="trioSonataIV_intermediate.bin">trioSonataIV_intermediate.bin</button>
     </details>
     <details>
+      <summary>Games</summary>
+      <button data-tape="kalah.bin">kalah.bin</button>
+    </details>
+    <details>
       <summary>Utilities</summary>
       <button data-tape="digital-1-12-m-rim.bin">digital-1-12-m-rim.bin</button>
       <button id="autotest">Test (insert digital-1-12-m-rim.bin first)</button>
@@ -360,6 +364,18 @@
       <li>Press Start once for each voice on the tape. I'm not certain how to determine this, I think there are 3 voices on the trio Sonata tapes.
       <li>Turn off sense switch 1.
       <li>Press Start.
+    </ol>
+  </details>
+  <details>
+    <summary>Kalah</summary>
+    <p>Kalah (often marketed as Mancala) is a game where you take turns against an opponent to collect seeds into your mancala on the side of the board. You control the lower holes and the right hand side.</p>
+    <p>Wikipedia has further details on <a href="https://en.wikipedia.org/wiki/Kalah">How to play Kalah</a>.</p>
+    <p>There is a <a href="https://bitsavers.org/pdf/dec/pdp1/memos/M-1098_Kalah_Mar61.pdf">memo on Bitsavers</a> but its instructions don't seem to fully correspond with the copy we have.</p>
+    <ol>
+      <li>Enable Hardware MUL/DIV</li>
+      <li>Set the TEST WORD. Try 040000 (check the left checkbox of the second from the left group). The first two digits are how many seeds should be in each hole. I believe towards the end of the test word is how deep the computer looks when making a move.</li>
+      <li>Load the kalah.bin tape, then READ IN</li>
+      <li>The + sign indicates whose turn it is to make a move. Select a pit to choose that pit for your move, or select the + to have the computer make the move.</li>
     </ol>
   </details>
 </div>
