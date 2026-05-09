@@ -3,6 +3,7 @@ function oct(num) {
 }
 
 var ac=0, io=0, pc=4, y, ib, ov=0, bank=0, ma=0, mb=0;
+var tyi_buffer = 0o00;
 var MULDIV = false; // Hardware MUL/DIV?
 var JITTER = 1; // Shake the display plots to increase legibility?
 var LIGHTPEN_RADIUS = 3; // Radius of point detection on lightpen click
@@ -89,7 +90,13 @@ function sign(num) {
 function setup(){
 	pdp1console = new PDP1Console;
 	pdp1audio = new PDP1Audio;
-	pdp1term = new PDP1Term;
+	pdp1term = document.querySelector("pdp-1-typewriter");
+	pdp1term.addEventListener("concise", (e) => {
+		let concise = e.detail;
+		tyi_buffer = concise;
+		flag(1, true);
+		// TODO: type-in status bits (and other status bits)
+	});
 	canvas = document.getElementById('swcanvas');
 	canvas.width = 512;
 	canvas.height =512;
@@ -100,8 +107,6 @@ function setup(){
 	window.onkeyup = function(e){handleKeyup(e);}
 	canvas.onpointerdown = handlePointerDown;
 	canvas.onpointerup = handlePointerUp;
-	pdp1term.createScreen("any", 24, 80);
-	document.getElementById("termframe").append(pdp1term.getCanvas());
 	timer = setInterval(frame, 56); 
 	requestAnimationFrame(onAnimationFrame);
 }
@@ -395,7 +400,8 @@ function* dispatch(md) {
 		if ((y&077)==011) {io = control; break;}
 		if ((y&0o7777)==0o4074) {extend = 1; break;} // eem
 		if ((y&0o7777)==0o0074) {extend = 0; break;} // lem
-		if((y&0o0003)==0o0003) {pdp1term.renderCode(io&0o77); break;}
+		if((y&0o0003)==0o0003) {pdp1term.fromComputer(io&0o77); break;}
+		if((y&0o0004)==0o0004) {io = tyi_buffer; tyi_buffer |= 0o100; break;}
 		console.error("Unknown IOT", `0o${md.toString(8)}`);
 		running = 0;
 		break;
