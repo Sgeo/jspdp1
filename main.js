@@ -47,6 +47,7 @@ function sense(sensenum, value) {
 	}
 }
 var extend = 0;
+var extend_switch = 0;
 var control=0;
 var elapsedTime = 0;
 var running = 0;

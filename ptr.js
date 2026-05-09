@@ -25,6 +25,7 @@ class PaperTapeReader {
     }
 
     rim() { // Not sure the cleanest way to express mutation of main PDP-1
+        window.extend = window.extend_switch;
         while(true) {
             console.log("About to retrieve a RIM instruction");
             let inst = this.rpbi();

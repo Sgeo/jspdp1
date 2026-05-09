@@ -64,7 +64,7 @@ class PDP1Console {
 
     start() {
         window.ov = 0;
-        window.extend = 0; // TODO: Option to start with extend
+        window.extend = window.extend_switch;
         window.bank = window.testAddress >> 12;
         window.pc = window.testAddress & 0o7777;
         window.running = 1;
