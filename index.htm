@@ -276,6 +276,10 @@
       <button data-tape="kalah.bin">kalah.bin</button>
     </details>
     <details>
+      <summary>Programming</summary>
+      <button data-tape="lisp.rim">lisp.rim</button>
+    </details>
+    <details>
       <summary>Utilities</summary>
       <button data-tape="digital-1-12-m-rim.bin">digital-1-12-m-rim.bin</button>
       <button id="autotest">Test (insert digital-1-12-m-rim.bin first)</button>
@@ -383,6 +387,26 @@
       <li>Load the kalah.bin tape, then READ IN</li>
       <li>The + sign indicates whose turn it is to make a move. Select a pit to choose that pit for your move, or select the + to have the computer make the move.</li>
     </ol>
+  </details>
+  <details>
+    <summary>Lisp</summary>
+    <p>PDP-1 Lisp by L Peter Deutsch is likely to be the first REPL (read-evaluate-print-loop, an interactive approach to programming). It is based on LISP 1.5 for the IBM 7090.</p>
+    <p>The PDP-1 replica site has a good section about <a href="https://obsolescence.dev/pdp1-lisp-introduction.html">PDP-1 Lisp</a></p>.
+    <ol>
+      <li>Enable Hardware MUL/DIV</li>
+      <li>Set EXTEND on (leftmost bit of EXTEND and EXTENSION and ADDRESS)</li>
+      <li>Load lisp.rim</li>
+      <li>READ IN</li>
+      <li>Set TEST WORD to the upper bounds for LISP (7777 or 7750 should be fine)</li>
+      <li>CONTINUE</li>
+      <li>Set TEST WORD to 400</li>
+      <li>CONTINUE</li>
+      <li>Set SENSE SWITCH 5 on</li>
+      <li>CONTINUE</li>
+      <li>Set ADDRESS to 4. This makes it easy to recover from errors: START, then CONTINUE.</li>
+      <li>After typing an expression, press space.</li>
+    </ol>
+
   </details>
 </div>
 </body>
